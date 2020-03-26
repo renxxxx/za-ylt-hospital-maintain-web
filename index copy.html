@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>忠安医联体医院运维</title>
+
+
+    <script src="/hospital/maintain/libs/jquery.min.js"></script>
+    <script src="/hospital/maintain/libs/zTree_v3/js/jquery.ztree.all.js"></script>
+    <link rel="stylesheet" href="../libs/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <script src="/hospital/maintain/libs/jquery.cookie.js"></script>
+    <script src="/hospital/maintain/libs/layer/layer.js"></script>
+    <script src="/hospital/maintain/libs/jquery.extend.oneall.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../libs/jquery-easyui-1.8.7/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../libs/jquery-easyui-1.8.7/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="../libs/jquery-easyui-1.8.7/demo/demo.css">
+    <script type="text/javascript" src="/hospital/maintain/libs/jquery-easyui-1.8.7/jquery.easyui.min.js"></script>
+
+    <script src="/libs/common.js"></script>
+    <script src="libs/common.js"></script>
+    <link rel="stylesheet" href="libs/common.css" />
+    <script src="index/index.js"></script>
+    <link rel="stylesheet" href="index/index.css" />
+</head>
+<style>
+    #indexPad .ztree li {
+        margin: 3px;
+    }
+
+    #indexPad .ztree * {
+        font-size: 14px;
+
+    }
+</style>
+
+<body style="margin:0;padding:0;">
+
+    <div id='indexPad'>
+        <div style="height:70px;border-bottom: 1px solid darkgray;">
+            <div id="title"
+                style="line-height: 70px;float:left;height:100%;padding:0 30px;text-align: center;font-weight: 700;font-size: 24px;">
+                </div>
+        </div>
+        <div style="position: absolute;top:71px;left:0;bottom:0;right:0;">
+            <div id="leftPad"
+                style="vertical-align: top;width:150px;height: 100%;display: inline-block;text-align: center;overflow: auto;">
+                <div style="width:100%;border-bottom:1px solid #e4e5e7;text-align:center;padding:10px 0;">
+                    <img src="./index/resource/head.png" style="width:60px;">
+                    <div id="account" style="color: rgb(119, 119, 119);"></div>
+                </div>
+                <ul id="menu" class="ztree" style="padding:0;margin:0;    margin-top: 5px;"></ul>
+            </div>
+            <div id="middlePad"
+                style="vertical-align: top;width:10px;display: inline-block;height: 100%;cursor: pointer;position:relative;background-color: darkgray;color: #ffffff"
+                onclick="hideLeftPad()">
+                <div style="position:absolute;top:50%;transform: translateY(-50%);width:100%;text-align: center;">
+                    .<br />
+                    .<br />
+                    .<br />
+                    .<br />
+                    .<br />
+                    .<br />
+                </div>
+            </div>
+            <div style="height: 100%;display: inline-block;position: absolute;left:165px;top:0;bottom:0;right:0;">
+                <div id="tabPad" class="easyui-tabs" style="width:100%">
+
+                </div>
+                <div id="tab-tools">
+                    <a href="javascript:void(0)" class="easyui-linkbutton"
+                        data-options="plain:true,iconCls:'icon-dustbin'"
+                        onclick="
+						if(confirm('确定关闭所有标签页吗？'))
+						$($('#tabPad').tabs('tabs')).each(function(index,ele){ $('#tabPad').tabs('close',),index})   "></a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+<script>
+
+    var token = $.cookie('token'), logining, account, zNodes;
+
+    $('#tabPad').tabs({
+        fit: true,
+        narrow: true,
+        tools: '#tab-tools',
+        onSelect: function (title) {
+
+        }
+    });
+
+    hospitalCommon.newTab('概览','overview.html')
+
+    
+
+    if (token) {
+        $.ajax({
+            url: '/hospital/login-refresh',
+            type: 'post',
+            async: false,
+            success: function (data) {
+                if(data.codeMsg)
+                    alert(data.codeMsg)
+                if (data.code == 0) {
+                    $.cookie('logining', JSON.stringify(data.data), { expires: 30, path: '/' });
+                    account = data.data.account
+                    $('#title').text('忠安医联体-医院平台-'+$(data.data).oneall_nestAttr('hospital.name'))
+                    $('title').text('忠安医联体-医院平台-'+$(data.data).oneall_nestAttr('hospital.name'))
+                } else {
+                    hospitalCommon.breakCodeProcess(data.code, data.codeMsg)
+                }
+            }
+        })
+    } else {
+        alert('请登录')
+        hospitalCommon.breakCodeProcess(20)
+    }
+
+    $('#account').text(account)
+
+
+    zNodes = []
+
+    zNodes.push({ name: '概览', _url: './overview.html' })
+    zNodes.push({ name: '病员管理', _url: './patient-manage.html' })
+    zNodes.push({ name: '文章管理', _url: './article-manage.html' })
+    zNodes.push({ name: '项目管理', _url: './project-manage.html' })
+    zNodes.push({ name: '活动管理', _url: './activity-manage.html' })
+    zNodes.push({ name: '科室管理', _url: './office-manage.html' })
+    zNodes.push({ name: '专家管理', _url: './doctor-manage.html' })
+    zNodes.push({ name: '退出登录', _url: '' })
+    // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
+    var setting = {
+        view: {
+            dblClickExpand: false
+        },
+        callback: {
+            onClick: function (e, treeId, treeNode) {
+                if (treeNode.name == '退出登录') {
+                    logout();
+                    return ;
+                }
+                if(treeNode._url)
+                    hospitalCommon.newTab(treeNode.name,treeNode._url)
+
+                zTreeObj.expandNode(treeNode);
+            }
+        }
+    };
+    // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
+    var zTreeObj = $.fn.zTree.init($("#menu"), setting, zNodes);
+
+
+    function logout() {
+        $.ajax({
+            type:'post',
+            url: '/hospital/logout',
+            data: { token: token },
+            async: true
+        })
+        location.href = './login.html';
+    }
+
+    function hideLeftPad() {
+        if ($('#leftPad').is(':hidden')) {
+            $('#leftPad').show();
+            $('#tabPad').css("left", "165px")
+        }
+        else {
+            $('#leftPad').hide();
+            $('#tabPad').css("left", "11px")
+        }
+    }
+</script>
+
+</html>
