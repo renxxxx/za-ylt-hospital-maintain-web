@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>忠安医联体运维-查看广告</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+
+
+    <!-- <script src="./libs/jquery.min.js"></script> -->
+    <!-- <script src="./libs/jquery.cookie.js"></script> -->
+    <script src="./libs/jquery-easyui-1.8.7/jquery.min.js"></script>
+    <script src="./libs/carhartl-jquery-cookie-92b7715/jquery.cookie.js"></script>
+    <script src="./libs/layer/layer.js"></script>
+    <script src="./libs/moment.js"></script>
+    <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/icon.css">
+    <script type="text/javascript" src="./libs/jquery-easyui-1.8.7/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="./libs/jquery-easyui-1.8.7/locale/easyui-lang-zh_CN.js"></script>
+    <!-- <link rel="stylesheet" href="./libs/jQueryViewer20160329/css/viewer.min.css"> -->
+    <!-- <script src="./libs/jQueryViewer20160329/js/viewer.min.js"></script> -->
+    <!-- <script src="./libs/jQueryViewer20160329/js/viewer-jquery.min.js"></script> -->
+    <link rel="stylesheet" href="./libs/viewer-master/dist/viewer.min.css">
+    <script src="./libs/viewer-master/dist/viewer.min.js"></script>
+    <script src="./libs/common.js"></script>
+    <link rel="stylesheet" href="./libs/common.css" />
+    <link rel="stylesheet" href="./libs/kindeditor/themes/default/default.css" />
+    <link rel="stylesheet" href="./libs/kindeditor/plugins/code/prettify.css" />
+    <script charset="utf-8" src="./libs/kindeditor/kindeditor-all.js"></script>
+    <script charset="utf-8" src="./libs/kindeditor/lang/zh-CN.js"></script>
+    <script charset="utf-8" src="./libs/kindeditor/plugins/code/prettify.js"></script>
+
+    <script src="./libs/maintain/common.js"></script>
+    <link rel="stylesheet" href="./libs/maintain/common.css" />
+</head>
+
+<style>
+    #rowPad .show {}
+
+    #rowPad .edit {
+        display: none;
+    }
+</style>
+<style type="text/css">
+    *{
+        font-family: "黑体";
+    }
+    body,html{
+        height: 100%;
+        overflow: auto;
+    }
+    html{ background-color: hsla(0,0%,96%,1.00); 
+    }
+    body{
+        background: none;
+    }
+    section{
+        padding-top: 3rem;
+        font-size: 0.9rem;
+    }
+    #headimg{
+        width: 12rem;
+        height: 12rem;
+        border: 2px solid #ffffff;
+        border-radius:100% ;
+        margin: auto;
+        margin-bottom: 1.7rem;
+        background-size:100% 100% !important;
+        background-repeat:no-repeat;
+        background-position: center center;
+    }
+    /*截图上传页面*/
+    .clipbg{
+        position: fixed;
+        background: black;
+        top: 0;
+        z-index: 999;
+        width: 100%;
+        height: 100%;
+        left: 0;
+    }
+    .loading{
+        position: absolute;
+        top: 40%;
+        width: 38%;
+        left: 31%;
+        height: 1.6rem;
+        line-height: 1.6rem;
+        z-index: 99999;
+        text-align: center;
+        color: #ffffff;
+        border-radius:0.2rem ;
+        background: #9f9f9f;
+    }
+    .clipbg #clipArea{
+        width: 100%;
+        height: 80%;
+        margin: auto;
+
+    }
+    .clipbg .footer{
+        width: 90%;
+        position: fixed;
+        left: 5%;
+        bottom: 0px;
+        text-align: center;
+    }
+    .clipbg dl{
+        background: #ffffff;
+        border-radius: 0.4rem;
+        overflow: hidden;
+        margin-bottom: 0.6rem;
+    }
+    .clipbg dd{
+        position: relative;
+        height: 2.25rem;
+        line-height: 2.25rem;
+        border-bottom:1px solid #999999 ;
+    }
+    .clipbg .back{
+        height: 2.25rem;
+        line-height:2.25rem;
+        border-radius: 0.4rem;
+        margin-bottom: 0.4rem;
+        background: #ffffff;
+    }
+    .clipbg dd input{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 11;
+        filter:alpha(opacity=0);  
+      -moz-opacity:0;  
+      -khtml-opacity: 0;  
+      opacity: 0; 
+    }
+    /*日期样式*/
+    .mbsc-android-holo-light .mbsc-fr-hdr{
+        color: #e3264e;
+        border-color: #e3264e;
+    }
+    .mbsc-android-holo-light .mbsc-sc-whl-l{
+        border-color: #e3264e;
+    }
+
+    .displaynone{
+        display: none;
+    }
+    /*选框*/
+    .aui-radio:checked, .aui-radio.aui-checked, .aui-checkbox:checked, .aui-checkbox.aui-checked{
+        background: #ffffff;
+        border: 1px solid #fd1142;
+    }
+
+    .aui-radio:checked:before, .aui-radio.aui-checked:before, .aui-checkbox:checked:before, .aui-checkbox.aui-checked:before, .aui-radio:checked:after, .aui-radio.aui-checked:after, .aui-checkbox:checked:after, .aui-checkbox.aui-checked:after{
+        border: 1px solid #fd1142;
+        border-top: none;
+        border-right: none;
+    }
+
+</style>
+<script>
+    console.dir(common.queryStringObject())
+    var queryStringObject = common.queryStringObject();
+    var provinceList =[]
+    var provinceList2 = []
+    var provinceList3 = []
+    var address = {
+        area1Id : '',
+        area1Text : '',
+
+        indexOf : undefined,
+        area2Id : '',
+        area2Text : '',
+        index2Of :undefined,
+        area3Id : '',
+        area3Text : '',
+        index3Of : undefined,
+    }
+    var rowPad = {
+        selector: "#rowPad",
+        param: { token: null, hospitalAdId: null },
+        row: {
+
+        }, contentKindEditor: null,
+        beforePage: function () {
+            rowPad.param.hospitalAdId = queryStringObject.hospitalAdId
+
+            $.ajax({
+                type: 'get',
+                url: '/hospital/def/maintain/hospital-info',
+                async: false,
+                data: '',
+                success: function (data) {
+                    if (data.codeMsg)
+                        alert(data.codeMsg)
+                    if (data.code == 0) {
+                        $.ajax({
+                            url: './libs/area.json',
+                            type: 'get',
+                            success: function (res) {
+                                console.dir(res)
+                                provinceList = res
+                                debugger 
+                                if(data.data.adminarea1Id){
+                                    $.each(provinceList, function(i, item) {
+                                        if (data.data.adminarea1Id == item.value) {
+                                            address.area1Text = item.label
+                                            address.area1Id = item.value,
+                                            address.indexOf = i
+                                            provinceList2 = provinceList[i].children
+                                            console.log(provinceList[address.indexOf])
+                                            console.dir(item)
+                                            if(data.data.adminarea2Id){
+                                                if(provinceList2){
+                                                    debugger
+                                                    $.each(provinceList2, function(i, item) {
+                                                        if (data.data.adminarea2Id == item.value) {
+                                                            address.area2Text = item.label
+                                                            address.area2Id = item.value,
+                                                            address.index2Of = i;
+                                                            provinceList3 = provinceList[address.indexOf].children[address.index2Of].children
+                                                            //provinceList[address.indexOf].children[address.index2Of].children
+                                                            console.dir(provinceList3)
+                                                            
+                                                            // return thisValue.cityItem
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                                
+                            }
+                        })
+
+                        rowPad.row = data.data;
+                        address.area1Id = data.data.adminarea1Id
+                        address.area1Text = data.data.adminarea1Name
+                        address.area2Id = data.data.adminarea2Id
+                        address.area2Text = data.data.adminarea2Name
+                        address.area3Id = data.data.adminarea3Id
+                        address.area3Text = data.data.adminarea3Name
+                    }else {
+                        hospitalCommon.breakCodeProcess(data.code, data.codeMsg)
+                    }
+                }
+            })
+        },
+        afterPage: function () {
+            $(rowPad.selector).find('[name=dg]').datagrid()
+
+            rowPad.contentKindEditor = KindEditor.create('#rowPad [name=content]', {
+                cssPath: './libs/kindeditor/plugins/code/prettify.css',
+                uploadJson: '/kindeditor/upload_json.jsp',
+                fileManagerJson: '/kindeditor/file_manager_json.jsp',
+                allowFileManager: true,
+                afterCreate: function () {
+                    var self = this;
+                    KindEditor.ctrl(document, 13, function () {
+                        self.sync();
+                        document.forms['example'].submit();
+                    });
+                    KindEditor.ctrl(self.edit.doc, 13, function () {
+                        self.sync();
+                        document.forms['example'].submit();
+                    });
+
+                    debugger
+                    if (rowPad.row.contentBtId)
+                        $.get(`/bigtxt/${rowPad.row.contentBtId}/${rowPad.row.contentBtId}?rand=${Math.random()}`, function (data) {
+                            
+                            self.html(data)
+                        })
+                }
+            })
+        },
+        rowAlter: function () {
+            $.ajax({
+                type: 'post',
+                url: '/hospital/def/maintain/update-hospital-info',
+                data: Object.assign({ 
+                    cover: rowPad.row.cover,
+                    intro: rowPad.row.intro,
+                    tel: rowPad.row.tel,
+                    license : rowPad.row.license,
+                    headman : rowPad.row.headman,
+                    address : rowPad.row.address,
+                    adminarea1Id : address.area1Id,
+                    adminarea1Name : address.area1Text,
+                    adminarea2Id : address.area2Id,
+                    adminarea2Name : address.area2Text,
+                    adminarea3Id : address.area3Id,
+                    adminarea3Name : address.area3Text,
+                }),
+                success: function (data) {
+                    if (data.codeMsg)
+                        alert(data.codeMsg)
+                    if (data.code == 0) {
+                        if (!data.codeMsg)
+                            alert('操作成功')
+                        location.reload()
+                    } else {
+                        hospitalCommon.breakCodeProcess(data.code, data.codeMsg)
+                    }
+                }
+            })
+        }
+    }
+
+    rowPad.beforePage()
+
+    var loadingPad = {
+        param:{},
+        remove: function () {
+            $("#loadingPad").remove();
+        }
+    }
+
+    $.parser.onComplete = function () {
+        loadingPad.remove()
+    }
+
+</script>
+
+<body style="margin:0;padding:0;">
+    <div id='loadingPad' style="position: absolute; z-index: 1000; top: 0px; left: 0px; 
+        width: 100%; height: 100%; background: white; text-align: center;padding:5px 10px">
+        <font>loading···</font>
+    </div>
+
+    <div id="rowPad">
+        <table name="dg" data-options="singleSelect:true,height:'700px'">
+            <thead>
+                <tr>
+                    <th data-options="field:'name',width:200">属性</th>
+                    <th data-options="field:'value',width:500">值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>医院名称</td>
+                    <td><input name="name" class="easyui-textbox" style="width:100%" data-options="
+                        value:rowPad.row.name,
+                        iconWidth:20,
+                        icons:[{
+                            iconCls:'icon-clear',
+                            handler: function(e){
+                                debugger
+                                $(e.data.target).textbox('setValue','');
+                            }
+                        }],
+                        onChange:function(newValue, oldValue){
+                            rowPad.row.name=newValue
+                        }" style="width:200px"></td>
+                </tr>
+                <tr>
+                    <td>院长姓名</td>
+                    <td><input name="headman" class="easyui-textbox" style="width:100%" data-options="
+                        value:rowPad.row.headman,
+                        iconWidth:20,
+                        icons:[{
+                            iconCls:'icon-clear',
+                            handler: function(e){
+                                debugger
+                                $(e.data.target).textbox('setValue','');
+                            }
+                        }],
+                        onChange:function(newValue, oldValue){
+                            rowPad.row.headman=newValue
+                        }" style="width:200px"></td>
+                </tr>
+                <tr>
+                        <td>封面</td>
+                        <td>
+                            <div name="cover" class="cover">
+                                <img style="height:30px;"  src="./resource/loadholder.jpg" style="cursor:pointer;" onload='$(this).attr("src",rowPad.row.cover||"").parent().viewer({
+                                    url: "src",
+                                });' />
+                                <!-- <input type="file" style="display:none;" onchange="
+                                javascript:
+                                var target = this;
+                                if(this.files.length>0)
+                                    common.uploadImage(this,function(url){
+                                        $(target).prev().attr('src',url)
+                                            rowPad.row.cover=url   
+                                    })
+                            " /> -->
+                                <a href="JavaScript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" plain="true"
+                                    style="vertical-align: text-bottom;"
+                                    onclick="$(this).prev().prev().attr('src','');rowPad.row.cover='';"></a>
+    
+                                <a href="JavaScript:void(0)" class="easyui-linkbutton btn" iconCls="icon-choose" plain="true"
+                                    style="vertical-align: text-bottom;" ></a>
+                                    <!-- onclick="$(this).prev().prev().click()" -->
+                            </div>
+                        </td>
+                    </tr>
+                    <div class="clipbg displaynone">
+                            <div id="clipArea"></div>
+                            <div class="loading displaynone">正在载入图片...</div>
+                            <div class="footer">
+                                <dl>
+                                    <dd style="background: #fe1041; color: #ffffff;border: none;margin-inline-start: 0px;">打开相册<input type="file" id="file" accept="image/*" ></dd>
+                                    <dd id="clipBtn">完成裁剪</dd>
+                                </dl>
+                                <div class="back">取消</div>
+                            </div>
+                    </div>
+                    <script type="text/javascript" src="./libs/camera.js/hammer.min.js" ></script>
+                    <script type="text/javascript" src="./libs/camera.js/lrz.all.bundle.js" ></script>
+                    <script type="text/javascript" src="./libs/camera.js/iscroll-zoom-min.js" ></script>
+                    <script type="text/javascript" src="./libs/camera.js/PhotoClip.js" ></script>
+                    <tr>
+                        <td>营业执照</td>
+                        <td>
+                            <div name="license" class="license">
+                                <img style="height:30px;"  src="./resource/loadholder.jpg" style="cursor:pointer;" onload='$(this).attr("src",rowPad.row.license||"").parent().viewer({
+                                    url: "src",
+                                });'/>
+                                <!-- <input type="file" style="display:none;" onchange="
+                                javascript:
+                                var target = this;
+                                if(this.files.length>0)
+                                    common.uploadImage(this,function(url){
+                                        $(target).prev().attr('src',url)
+                                            rowPad.row.license=url   
+                                    })
+                            " /> -->
+                                <a href="JavaScript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" plain="true"
+                                    style="vertical-align: text-bottom;"
+                                    onclick="$(this).prev().prev().attr('src','');rowPad.row.license='';"></a>
+    
+                                <a href="JavaScript:void(0)" class="easyui-linkbutton btn2" iconCls="icon-choose" plain="true"
+                                    style="vertical-align: text-bottom;" ></a>
+                                    <!-- onclick="$(this).prev().prev().click()" -->
+                            </div>
+                        </td>
+                    </tr>
+                <tr>
+                        <td>联系电话</td>
+                        <td><input name="tel" class="easyui-textbox" style="width:100%" data-options="
+                            value:rowPad.row.tel,
+                            iconWidth:20,
+                            icons:[{
+                                iconCls:'icon-clear',
+                                handler: function(e){
+                                    debugger
+                                    $(e.data.target).textbox('setValue','');
+                                }
+                            }],
+                            onChange:function(newValue, oldValue){
+                                rowPad.row.tel=newValue
+                            }" style="width:200px"></td>
+                    </tr>
+                   
+                    <tr>
+                            <td>类型-文章</td>
+                            <td>
+                                <input class="easyui-combobox" name="adminarea1Id" style="width:20%;" data-options="
+                                value:address.area1Text,
+                                valueField:'value',
+                                textField:'label',
+                                panelHeight:'auto',
+                                mode:'remote',
+                                onShowPanel:function(){
+                                    $(this).combobox('reload')
+                                },
+                                loader: function (param, success, error) {
+                                    success(provinceList);
+                                },
+                                onUnselect:function(){
+                                },
+                                onChange:function(newValue, oldValue){
+                                    address.area1Id = newValue
+                                    if(provinceList != 0)
+                                        $.each(provinceList, function(i, item) {
+                                            if (address.area1Id == item.value) {
+                                                address = {
+                                                    area1Id : '',
+                                                    area1Text : '',
+                                                    indexOf : undefined,
+                                                    area2Id : '',
+                                                    area2Text : '',
+                                                    index2Of : undefined,
+                                                    area3Id : '',
+                                                    area3Text : '',
+                                                    index3Of : undefined,
+                                                }
+                                                address.area1Text = item.label
+                                                address.area1Id = item.value,
+                                                address.indexOf = i
+                                                provinceList2 = provinceList[i].children
+                                                console.log(provinceList[address.indexOf])
+                                                console.dir(item)
+                                            }
+                                        });
+                                },
+                                loadFilter: function (data) {
+                                    return data;
+                                },
+                                iconWidth:20,
+                                icons:[{
+                                    iconCls:'icon-clear',
+                                    handler: function(e){
+                                        $(e.data.target).combobox('setValue','');
+                                    }
+                                }]
+                                ">
+                                <input class="easyui-combobox" name="adminarea2Id" style="width:20%;" data-options="
+                                value:address.area2Text,
+                                valueField:'value',
+                                textField:'label',
+                                panelHeight:'auto',
+                                mode:'remote',
+                                onShowPanel:function(){
+                                    $(this).combobox('reload')
+                                },
+                                unselect:function(){
+                                    console.dir(address)
+                                },
+                                loader: function (param, success, error) {
+                                    debugger
+                                    if(provinceList2){
+                                        success(provinceList2);
+                                        console.log(provinceList2)
+                                    }else{
+                                        success('');
+                                    }
+                                },
+                                onSelect:function(e){
+                                    console.log(e)
+                                },
+                                onChange:function(newValue, oldValue){
+                                    console.log(newValue)
+                                    address.area2Id = newValue
+                                    if(provinceList2){
+                                        address.area2Text = ''
+                                        address.index2Of = undefined
+                                        address.area3Id = ''
+                                        address.area3Text = ''
+                                        address.index3Of = undefined
+                                        debugger
+                                        $.each(provinceList2, function(i, item) {
+                                            if (address.area2Id == item.value) {
+                                                address.area2Text = item.label
+                                                address.area2Id = item.value,
+                                                address.index2Of = i;
+                                                provinceList3 = provinceList[address.indexOf].children[address.index2Of].children
+                                            }
+                                        });
+                                    }
+                                },
+                                loadFilter: function (data) {
+                                    return data;
+                                },
+                                iconWidth:20,
+                                icons:[{
+                                    iconCls:'icon-clear',
+                                    handler: function(e){
+                                        $(e.data.target).combobox('setValue','');
+                                    }
+                                }]
+                                ">
+                                <input class="easyui-combobox" name="adminarea3Id" style="width:20%;" data-options="
+                                value:address.area3Text,
+                                valueField:'value',
+                                textField:'label',
+                                panelHeight:'auto',
+                                mode:'remote',
+                                onShowPanel:function(){
+                                    $(this).combobox('reload')
+                                },
+                                loader: function (param, success, error) {
+                                    if(provinceList3){
+                                        success(provinceList3);
+                                    }else{
+                                        success('');
+                                    }
+                                        
+                                },
+                                onSelect:function(e){
+                                },
+                                onUnselect:function(){
+                                },
+                                onChange:function(newValue, oldValue){
+                                    if(provinceList3){
+                                        address.area3Id = ''
+                                        address.area3Text = ''
+                                        $.each(provinceList3, function(i, item) {
+                                            if (newValue == item.value) {
+                                                address.index3Of = undefined
+                                                address.area3Text = item.label
+                                                address.area3Id = item.value,
+                                                address.inde3xOf = i
+                                                console.log(item.value)
+                                                // return thisValue.cityItem
+                                            }
+
+                                            console.dir(address)
+                                        });
+                                    }
+                                       
+                                },
+                                loadFilter: function (data) {
+                                    return data;
+                                },
+                                iconWidth:20,
+                                icons:[{
+                                    iconCls:'icon-clear',
+                                    handler: function(e){
+                                        $(e.data.target).combobox('setValue','');
+                                    }
+                                }]
+                                ">
+                            </td>
+                        </tr>
+                <tr>
+                    <td>介绍</td>
+                    <td><input name="intro" class="easyui-textbox" style="width:100%;height:200px;" data-options="
+                            value:rowPad.row.intro,
+                            multiline:true,
+                            onChange:function(newValue, oldValue){
+                                rowPad.row.intro=newValue
+                            }" style="width:200px"></td>
+                </tr>
+                <tr>
+                    <td>详细地址</td>
+                    <td><input name="address" class="easyui-textbox" style="width:100%" placeholder="如道路、门牌号、小区、楼栋号、单元室等" data-options="
+                        value:rowPad.row.address,
+                        precision:2,
+                        iconWidth:20,
+                        icons:[{
+                            iconCls:'icon-clear',
+                            handler: function(e){
+                                $(e.data.target).textbox('setValue','');
+                            }
+                        }],
+                        onChange:function(newValue, oldValue){
+                            rowPad.row.address=newValue
+                        }"
+                        ></td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="margin-top:5px;">
+            <a href="JavaScript:void(0)" class="easyui-linkbutton show" iconCls="icon-edit"
+                onclick="$('.edit').css('display','inline-block');$('.show').hide();">修改</a>
+            <a href="JavaScript:void(0)" class="easyui-linkbutton edit" iconCls="icon-save"
+                onclick="rowPad.rowAlter()">确认修改</a>
+            <a href="JavaScript:void(0)" class="easyui-linkbutton edit" iconCls="icon-cancel"
+                onclick="location.reload()">取消修改</a>
+        </div>
+    </div>
+</body>
+<script>
+        rowPad.afterPage()
+    
+        // var clipArea2 = ''
+        $(".btn").click(function(){
+                $(".clipbg").fadeIn()
+                var  clipArea1 = new  PhotoClip("#clipArea", {
+                    size: [730, 490],//裁剪框大小
+                    outputSize:[0,0],//打开图片大小，[0,0]表示原图大小
+                    file: "#file",
+                    ok: "#clipBtn",
+                    loadStart: function() { //图片开始加载的回调函数。this 指向当前 PhotoClip 的实例对象，并将正在加载的 file 对象作为参数传入。（如果是使用非 file 的方式加载图片，则该参数为图片的 url）
+                        $(".loading").removeClass("displaynone");
+    
+                    },
+                    loadComplete: function() {//图片加载完成的回调函数。this 指向当前 PhotoClip 的实例对象，并将图片的 <img> 对象作为参数传入。
+                        $(".loading").addClass("displaynone");
+    
+                    },
+                    done: function(dataURL) { //裁剪完成的回调函数。this 指向当前 PhotoClip 的实例对象，会将裁剪出的图像数据DataURL作为参数传入。			
+                        console.log(dataURL);//dataURL裁剪后图片地址base64格式提交给后台处理
+                        $(".clipbg").fadeOut()
+                        var target = this;
+                        debugger
+                        if(dataURL)
+                            common.BlockHeadUploadImage(dataURL,function(url){
+                                console.log(url)
+                                // console.log( $('.coverPad img').attr('src'))
+                                $('.cover img').attr('src',url)
+
+                                rowPad.row.cover=url   
+                           })
+                        //    clipArea2.destroy();
+                    }
+                });
+            })
+           
+            $(".btn2").click(function(){
+                $(".clipbg").fadeIn()
+                var  clipArea2  = new  PhotoClip("#clipArea", {
+                    size: [730, 490],//裁剪框大小
+                    outputSize:[0,0],//打开图片大小，[0,0]表示原图大小
+                    file: "#file",
+                    ok: "#clipBtn",
+                    loadStart: function() { //图片开始加载的回调函数。this 指向当前 PhotoClip 的实例对象，并将正在加载的 file 对象作为参数传入。（如果是使用非 file 的方式加载图片，则该参数为图片的 url）
+                        $(".loading").removeClass("displaynone");
+    
+                    },
+                    loadComplete: function() {//图片加载完成的回调函数。this 指向当前 PhotoClip 的实例对象，并将图片的 <img> 对象作为参数传入。
+                        $(".loading").addClass("displaynone");
+    
+                    },
+                    done: function(dataURL) { //裁剪完成的回调函数。this 指向当前 PhotoClip 的实例对象，会将裁剪出的图像数据DataURL作为参数传入。			
+                        console.log(dataURL);//dataURL裁剪后图片地址base64格式提交给后台处理
+                        $(".clipbg").fadeOut()
+                        var target = this;
+                        debugger
+                        if(dataURL)
+                            common.BlockHeadUploadImage(dataURL,function(url){
+                                console.log(url)
+                                // console.log( $('.coverPad img').attr('src'))
+                                $('.license img').attr('src',url)
+
+                                rowPad.row.license=url   
+                           })
+                        //    clipArea1.destroy();
+                    }
+                });
+            })
+            
+                $(".back").click(function(){
+                    $(".clipbg").fadeOut()
+                    // clipArea1.destroy();
+                    // if(clipArea2)
+                    //     clipArea2.destroy();
+                    // if(clipArea1)
+                    //     clipArea1.destroy();
+                    // $('.photo-clip-rotation-layer img').attr('src','')
+                })
+    </script>
+</html>

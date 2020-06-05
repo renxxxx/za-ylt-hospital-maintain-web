@@ -8,21 +8,24 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>忠安医联体医院运维</title>
     <script src="libs/common.js"></script>
-    <link rel="stylesheet" href="libs/common.css" />
-    <script src="index/index.js"></script>
-    <link rel="stylesheet" href="index/index.css" />
+    <link rel="stylesheet" href="./libs/common.css" />
+    <script src="./index/index.js"></script>
+    <link rel="stylesheet" href="./index/index.css" />
 
-    <script src="/libs/jquery.min.js"></script>
-    <script src="/libs/zTree_v3/js/jquery.ztree.all.js"></script>
-    <link rel="stylesheet" href="/libs/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
-    <script src="/libs/jquery.cookie.js"></script>
-    <script src="/libs/layer/layer.js"></script>
-    <script src="/libs/navim.js"></script>
+    <script src="./libs/jquery-easyui-1.8.7/jquery.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="/libs/jquery-easyui-1.8.7/themes/default/easyui.css">
-    <link rel="stylesheet" type="text/css" href="/libs/jquery-easyui-1.8.7/themes/icon.css">
-    <link rel="stylesheet" type="text/css" href="/libs/jquery-easyui-1.8.7/demo/demo.css">
-    <script type="text/javascript" src="/libs/jquery-easyui-1.8.7/jquery.easyui.min.js"></script>
+    <script src="./libs/zTree_v3-master/js/jquery.ztree.all.js"></script>
+    <link rel="stylesheet" href="./libs/zTree_v3-master/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <script src="./libs/carhartl-jquery-cookie-92b7715/jquery.cookie.js"></script>
+    
+    <!-- <script src="./libs/jquery-easyui-1.8.7/layer/layer.js"></script> -->
+    
+    <!-- <script src="./libs/navim.js"></script> -->
+
+    <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/demo/demo.css">
+    <script type="text/javascript" src="./libs/jquery-easyui-1.8.7/jquery.easyui.min.js"></script>
 </head>
 <style>
 .ztree li a.curSelectedNode {
@@ -81,11 +84,6 @@
 </body>
 <script>
     var token = $.cookie('token'), logining, zNodes;
-
-
-
-
-
         $.ajax({
             url: '/hospital/login-refresh',
             type: 'post',
@@ -109,6 +107,7 @@
     zNodes = []
 
     zNodes.push({ name: '概览', _url: './overview.html' })
+    zNodes.push({ name: '医院', _url: './hospitalEdit.html' })
     zNodes.push({ name: '广告', _url: './hospital-ad-manage.html' })
     zNodes.push({ name: '病员', _url: './patient-manage.html' })
     zNodes.push({ name: '文章', _url: './article-manage.html' })
@@ -145,9 +144,15 @@
             type: 'post',
             url: '/hospital/logout',
             data: { token: token },
-            async: true
+            async: true,
+            success: function (data) {
+                if(data.codeMsg)
+                    alert(data.codeMsg)
+                if (data.code == 0) {
+                    location.href = './login.html';
+                }
+            }
         })
-        location.href = './login.html';
     }
 
 
