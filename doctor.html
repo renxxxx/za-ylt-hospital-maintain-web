@@ -151,7 +151,9 @@
             border-top: none;
             border-right: none;
         }
-
+        dd {
+            margin-inline-start: 0px!important;
+        }
     </style>
 </head>
 
@@ -540,10 +542,10 @@ var loginingStr = $.cookie('hospitalLogin');
 </body>
 <script>
     rowPad.afterPage()
-
+    var clipArea = ''
     $(".btn").click(function(){
             $(".clipbg").fadeIn()
-            var clipArea = new  PhotoClip("#clipArea", {
+            clipArea = new  PhotoClip("#clipArea", {
 				size: [300, 300],//裁剪框大小
 				outputSize:[0,0],//打开图片大小，[0,0]表示原图大小
 				file: "#file",
@@ -577,7 +579,8 @@ var loginingStr = $.cookie('hospitalLogin');
             
 			$(".back").click(function(){
                 $(".clipbg").fadeOut();
-                clipArea.destroy();
+                if(clipArea)
+                        clipArea.destroy();
 			})
 </script>
 

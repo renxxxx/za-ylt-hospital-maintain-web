@@ -70,7 +70,7 @@
         background-position: center center;
     }
     /*截图上传页面*/
-    .clipbg{
+    .clipbg,.clipbg2{
         position: fixed;
         background: black;
         top: 0;
@@ -92,39 +92,39 @@
         border-radius:0.2rem ;
         background: #9f9f9f;
     }
-    .clipbg #clipArea{
+    .clipbg #clipArea,.clipbg2 #clipArea2{
         width: 100%;
         height: 80%;
         margin: auto;
 
     }
-    .clipbg .footer{
+    .clipbg .footer,.clipbg2 .footer{
         width: 90%;
         position: fixed;
         left: 5%;
         bottom: 0px;
         text-align: center;
     }
-    .clipbg dl{
+    .clipbg dl,.clipbg2 dl{
         background: #ffffff;
         border-radius: 0.4rem;
         overflow: hidden;
         margin-bottom: 0.6rem;
     }
-    .clipbg dd{
+    .clipbg dd,.clipbg2 dd{
         position: relative;
         height: 2.25rem;
         line-height: 2.25rem;
         border-bottom:1px solid #999999 ;
     }
-    .clipbg .back{
+    .clipbg .back,.clipbg2 .back2{
         height: 2.25rem;
         line-height:2.25rem;
         border-radius: 0.4rem;
         margin-bottom: 0.4rem;
         background: #ffffff;
     }
-    .clipbg dd input{
+    .clipbg dd input,.clipbg2 dd input{
         position: absolute;
         width: 100%;
         height: 100%;
@@ -159,7 +159,14 @@
         border-top: none;
         border-right: none;
     }
-
+    .combo-panel{
+        overflow-y: scroll;
+        overflow-x: hidden;
+        max-height: 250px;
+    }
+    dd {
+        margin-inline-start: 0px!important;
+    }
 </style>
 <script>
     console.dir(common.queryStringObject())
@@ -343,19 +350,9 @@
             <tbody>
                 <tr>
                     <td>医院名称</td>
-                    <td><input name="name" class="easyui-textbox" style="width:100%" data-options="
-                        value:rowPad.row.name,
-                        iconWidth:20,
-                        icons:[{
-                            iconCls:'icon-clear',
-                            handler: function(e){
-                                debugger
-                                $(e.data.target).textbox('setValue','');
-                            }
-                        }],
-                        onChange:function(newValue, oldValue){
-                            rowPad.row.name=newValue
-                        }" style="width:200px"></td>
+                    <td>
+                        <input name="name" class="easyui-textbox" style="width:100%" data-options="
+                        value:rowPad.row.name" style="width:200px;border:none" readonly="true"></td>
                 </tr>
                 <tr>
                     <td>院长姓名</td>
@@ -409,6 +406,17 @@
                                 </dl>
                                 <div class="back">取消</div>
                             </div>
+                    </div>
+                    <div class="clipbg2 displaynone">
+                        <div id="clipArea2"></div>
+                        <div class="loading displaynone">正在载入图片...</div>
+                        <div class="footer">
+                            <dl>
+                                <dd style="background: #fe1041; color: #ffffff;border: none;margin-inline-start: 0px;">打开相册<input type="file" id="file" accept="image/*" ></dd>
+                                <dd id="clipBtn">完成裁剪</dd>
+                            </dl>
+                            <div class="back2">取消</div>
+                        </div>
                     </div>
                     <script type="text/javascript" src="./libs/camera.js/hammer.min.js" ></script>
                     <script type="text/javascript" src="./libs/camera.js/lrz.all.bundle.js" ></script>
@@ -659,10 +667,10 @@
 <script>
         rowPad.afterPage()
     
-        // var clipArea2 = ''
+        var  clipArea = ''
         $(".btn").click(function(){
-                $(".clipbg").fadeIn()
-                var  clipArea1 = new  PhotoClip("#clipArea", {
+            $(".clipbg").fadeIn()
+                 clipArea = new  PhotoClip("#clipArea", {
                     size: [730, 490],//裁剪框大小
                     outputSize:[0,0],//打开图片大小，[0,0]表示原图大小
                     file: "#file",
@@ -684,18 +692,18 @@
                             common.BlockHeadUploadImage(dataURL,function(url){
                                 console.log(url)
                                 // console.log( $('.coverPad img').attr('src'))
-                                $('.cover img').attr('src',url)
+                                $('.coverPad img').attr('src',url)
 
                                 rowPad.row.cover=url   
                            })
-                        //    clipArea2.destroy();
+                           clipArea.destroy();
                     }
                 });
             })
-           
+            var  clipArea2 = ''
             $(".btn2").click(function(){
-                $(".clipbg").fadeIn()
-                var  clipArea2  = new  PhotoClip("#clipArea", {
+                $(".clipbg2").fadeIn()
+                clipArea2  = new PhotoClip("#clipArea2", {
                     size: [730, 490],//裁剪框大小
                     outputSize:[0,0],//打开图片大小，[0,0]表示原图大小
                     file: "#file",
@@ -710,7 +718,7 @@
                     },
                     done: function(dataURL) { //裁剪完成的回调函数。this 指向当前 PhotoClip 的实例对象，会将裁剪出的图像数据DataURL作为参数传入。			
                         console.log(dataURL);//dataURL裁剪后图片地址base64格式提交给后台处理
-                        $(".clipbg").fadeOut()
+                        $(".clipbg2").fadeOut()
                         var target = this;
                         debugger
                         if(dataURL)
@@ -721,19 +729,20 @@
 
                                 rowPad.row.license=url   
                            })
-                        //    clipArea1.destroy();
+                           clipArea2.destroy();
                     }
                 });
             })
             
-                $(".back").click(function(){
-                    $(".clipbg").fadeOut()
-                    // clipArea1.destroy();
-                    // if(clipArea2)
-                    //     clipArea2.destroy();
-                    // if(clipArea1)
-                    //     clipArea1.destroy();
-                    // $('.photo-clip-rotation-layer img').attr('src','')
-                })
+            $(".back").click(function(){
+                $(".clipbg").fadeOut()
+                if(clipArea)
+                    clipArea.destroy();
+            })
+            $('.back2').click(function(){
+                $('.clipbg2').fadeOut()
+                if(clipArea2)
+                    clipArea2.destroy();
+            })
     </script>
 </html>
