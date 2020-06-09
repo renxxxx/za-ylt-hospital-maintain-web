@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <title>忠安医联体运维-添加广告</title>
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+
+
+        <!-- <script src="./libs/jquery.min.js"></script> -->
+        <!-- <script src="./libs/jquery.cookie.js"></script> -->
+        <script src="./libs/jquery-easyui-1.8.7/jquery.min.js"></script>
+        <script src="./libs/carhartl-jquery-cookie-92b7715/jquery.cookie.js"></script>
+        <script src="./libs/layer/layer.js"></script>
+        <script src="./libs/moment.js"></script>
+        <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/default/easyui.css">
+        <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/icon.css">
+        <script type="text/javascript" src="./libs/jquery-easyui-1.8.7/jquery.easyui.min.js"></script>
+        <script type="text/javascript" src="./libs/jquery-easyui-1.8.7/locale/easyui-lang-zh_CN.js"></script>
+        <!-- <link rel="stylesheet" href="./libs/jQueryViewer20160329/css/viewer.min.css"> -->
+        <!-- <script src="./libs/jQueryViewer20160329/js/viewer.min.js"></script> -->
+        <!-- <script src="./libs/jQueryViewer20160329/js/viewer-jquery.min.js"></script> -->
+        <link rel="stylesheet" href="./libs/viewer-master/dist/viewer.min.css">
+        <script src="./libs/viewer-master/dist/viewer.min.js"></script>
+        <script src="./libs/common.js"></script>
+        <link rel="stylesheet" href="./libs/common.css" />
+        <link rel="stylesheet" href="./libs/kindeditor/themes/default/default.css" />
+        <link rel="stylesheet" href="./libs/kindeditor/plugins/code/prettify.css" />
+        <script charset="utf-8" src="./libs/kindeditor/kindeditor-all.js"></script>
+        <script charset="utf-8" src="./libs/kindeditor/lang/zh-CN.js"></script>
+        <script charset="utf-8" src="./libs/kindeditor/plugins/code/prettify.js"></script>
+
+        <script src="./libs/maintain/common.js"></script>
+        <link rel="stylesheet" href="./libs/maintain/common.css" />
+        <link  href="./libs/cropper/cropper.css" rel="stylesheet">
+        <script src="./libs/cropper/cropper.js"></script>
+
+        
+    </head>
+    <body style="margin:0;padding:0;">
+        
+        <!-- 用一个块元素(容器)包装图像或画布元素 -->
+        <div class="box" style="width: 800px;height: 450px;overflow: hidden;">
+            <img id="images" src="./libs/timg.jpg">
+        </div>
+        <div class="views" style="width: 300px;height: 200px;overflow: hidden;">
+        </div>
+        <button id="chaijian" onclick="showFn()">裁剪</button>
+        <button onclick="showcCancelFn()">裁剪</button>
+    </body>
+    <script>
+        var cropper = new Cropper(images, {
+            aspectRatio: 16 / 9,     //默认裁剪框大小
+            viewMode:(1),
+            modal : false,
+            guides : false, 
+            preview:'.views',
+            background:false,
+            autoCrop:false,
+            crop: function (e) {
+                console.dir(e)
+            },
+            cropend:function(e){
+                console.dir(e)
+            },
+            zoom:function(e){
+                console.dir(e)
+            },
+        });
+        function showFn(){
+            debugger
+            console.log('s')
+            cropper('crop')
+            console.dir(cropper.getCroppedCanvas())
+        }
+        function showcCancelFn(){
+            debugger
+            $('#image').cropper('clear');
+        }
+    </script>
+</html>
+
+
+
