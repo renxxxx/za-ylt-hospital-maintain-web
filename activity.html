@@ -25,7 +25,6 @@
     <script src="./libs/viewer-master/dist/viewer.min.js"></script>
     <script src="./libs/common.js"></script>
     <link rel="stylesheet" href="./libs/common.css" />
-    <script src="./libs/jquery.extend.oneall.js"></script>
     <link rel="stylesheet" href="./libs/kindeditor/themes/default/default.css" />
     <link rel="stylesheet" href="./libs/kindeditor/plugins/code/prettify.css" />
     <script charset="utf-8" src="./libs/kindeditor/kindeditor-all.js"></script>
@@ -37,6 +36,8 @@
 
     <script src="./libs/maintain/common.js"></script>
     <link rel="stylesheet" href="./libs/maintain/common.css" />
+    <link  href="./libs/cropper/cropper.css" rel="stylesheet">
+    <script src="./libs/cropper/cropper.js"></script>
 </head>
 
 <style>
@@ -47,131 +48,20 @@
     }
 </style>
 <style type="text/css">
-    *{
-        font-family: "黑体";
-    }
-    body,html{
-        height: 100%;
-        overflow: auto;
-    }
-    html{ background-color: hsla(0,0%,96%,1.00); 
-    }
-    body{
-        background: none;
-    }
-    section{
-        padding-top: 3rem;
-        font-size: 0.9rem;
-    }
-    #headimg{
-        width: 12rem;
-        height: 12rem;
-        border: 2px solid #ffffff;
-        border-radius:100% ;
-        margin: auto;
-        margin-bottom: 1.7rem;
-        background-size:100% 100% !important;
-        background-repeat:no-repeat;
-        background-position: center center;
-    }
-    /*截图上传页面*/
-    .clipbg,.clipbg2{
-        position: fixed;
-        background: black;
-        top: 0;
-        z-index: 999;
-        width: 100%;
-        height: 100%;
-        left: 0;
-    }
-    .loading{
-        position: absolute;
-        top: 40%;
-        width: 38%;
-        left: 31%;
-        height: 1.6rem;
-        line-height: 1.6rem;
-        z-index: 99999;
-        text-align: center;
-        color: #ffffff;
-        border-radius:0.2rem ;
-        background: #9f9f9f;
-    }
-    .clipbg #clipArea,.clipbg2 #clipArea2{
-        width: 100%;
-        height: 80%;
-        margin: auto;
-
-    }
-    .clipbg .footer,.clipbg2 .footer{
-        width: 90%;
-        position: fixed;
-        left: 5%;
-        bottom: 0px;
-        text-align: center;
-    }
-    .clipbg dl,.clipbg2 dl{
-        background: #ffffff;
-        border-radius: 0.4rem;
-        overflow: hidden;
-        margin-bottom: 0.6rem;
-    }
-    .clipbg dd,.clipbg2 dd{
-        position: relative;
-        height: 2.25rem;
-        line-height: 2.25rem;
-        border-bottom:1px solid #999999 ;
-    }
-    .clipbg .back,.clipbg2 .back2{
-        height: 2.25rem;
-        line-height:2.25rem;
-        border-radius: 0.4rem;
-        margin-bottom: 0.4rem;
-        background: #ffffff;
-    }
-    .clipbg dd input,.clipbg2 dd input{
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        z-index: 11;
-        filter:alpha(opacity=0);  
-      -moz-opacity:0;  
-      -khtml-opacity: 0;  
-      opacity: 0; 
-    }
-    /*日期样式*/
-    .mbsc-android-holo-light .mbsc-fr-hdr{
-        color: #e3264e;
-        border-color: #e3264e;
-    }
-    .mbsc-android-holo-light .mbsc-sc-whl-l{
-        border-color: #e3264e;
-    }
-
-    .displaynone{
-        display: none;
-    }
-    /*选框*/
-    .aui-radio:checked, .aui-radio.aui-checked, .aui-checkbox:checked, .aui-checkbox.aui-checked{
-        background: #ffffff;
-        border: 1px solid #fd1142;
-    }
-
-    .aui-radio:checked:before, .aui-radio.aui-checked:before, .aui-checkbox:checked:before, .aui-checkbox.aui-checked:before, .aui-radio:checked:after, .aui-radio.aui-checked:after, .aui-checkbox:checked:after, .aui-checkbox.aui-checked:after{
-        border: 1px solid #fd1142;
-        border-top: none;
-        border-right: none;
-    }
-    .combo-panel{
-        overflow-y: scroll;
-        overflow-x: hidden;
-        max-height: 250px;
-    }
-    dd {
-        margin-inline-start: 0px!important;
-    }
+    .size{
+            font-size: 12px;
+            position: absolute;
+            z-index: 99;
+            color: #FFF;
+            right: 22px;
+            bottom: -15px;
+            width: auto;
+            height: auto;
+        }
+        p{
+            margin-block-start: 0px;
+            margin-block-end: 0px;
+        }
 </style>
 <script>
 
@@ -304,40 +194,86 @@
                             <img style="height:30px;" src="./resource/loadholder.jpg" style="cursor:pointer;" onload='$(this).attr("src",rowPad.row.cover||"").parent().viewer({
                                             url: "src",
                                         });' />
-                            <!-- <input type="file" style="display:none;" onchange="
-                                        javascript:
-                                        var target = this;
-                                        if(this.files.length>0)
-                                            common.uploadImage(this,function(url){
-                                                $(target).prev().attr('src',url)
-                                                    rowPad.row.cover=url   
-                                            })
-                                    " /> -->
+                            <input type="file" style="display:none;" onchange="
+                            javascript:
+                            var target = this;
+                            console.dir(this.files)
+                            if(this.files.length>0)
+                                saveFn(target.files[0],1)
+                               console.log(target.files[0])
+                               var fd = new FormData()
+                               fd.append('file', this.files[0]);
+                                $.ajax({
+                                    url: '/upload-static-file?',
+                                    type: 'POST',
+                                    data: fd,
+                                    cache: false,
+                                    processData: false,
+                                    contentType: false,
+                                    async: true,
+                                    success: function (res) {
+                                        debugger
+                                        if (res.codeMsg)
+                                            alert(res.codeMsg)
+                                        if (res.code == 0) {
+                                            $('.photoPopup').css('display', 'inline-block')
+                                            $('#images').attr('src' , res.data.url)
+                                            const images = document.getElementById('images');
+                                            debugger
+                                            console.log(target.value)
+                                            target.value=null;
+                                            cropper = new Cropper(images, {
+                                                aspectRatio: 16 / 9,     //默认裁剪框大小
+                                                viewMode:(1),
+                                                modal : false,
+                                                guides : false, 
+                                                preview:'.views',
+                                                background:false,
+                                                autoCrop:false,
+                                                crop: function (e) {
+                                                    console.log(typeof e.detail.width)
+                                                    $('.cropper-crop-box p').html(String(e.detail.width).substring(0,6)+' × '+String(e.detail.height).substring(0,6))
+                                                },
+                                                cropend:function(e){
+                                                },
+                                                zoom:function(e){
+                                                },
+                                            });
+                                        } else {
+                                            alert('操作失败，请重试')
+                                        }
+                                    }
+                                })
+                        " />
                             <a href="JavaScript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" plain="true"
                                 style="vertical-align: text-bottom;"
                                 onclick="$(this).prev().prev().attr('src','');rowPad.row.cover='';"></a>
 
-                            <a href="JavaScript:void(0)" class="easyui-linkbutton btn" iconCls="icon-choose" plain="true"
-                                style="vertical-align: text-bottom;"></a>
+                            <a href="JavaScript:void(0)" class="easyui-linkbutton" iconCls="icon-choose" plain="true"
+                                style="vertical-align: text-bottom;" onclick="$(this).prev().prev().click()"></a>
                                 <!-- onclick="$(this).prev().prev().click()" -->
                         </div>
                     </td>
                 </tr>
-                <div class="clipbg displaynone">
-                    <div id="clipArea"></div>
-                    <div class="loading displaynone">正在载入图片...</div>
-                    <div class="footer">
-                        <dl>
-                            <dd style="background: #fe1041; color: #ffffff;border: none;margin-inline-start: 0px;">打开相册<input type="file" id="file" accept="image/*" ></dd>
-                            <dd id="clipBtn">完成裁剪</dd>
-                        </dl>
-                        <div class="back">取消</div>
+                <div class="photoPopup" style="display: none;position: fixed;background: black;top: 0;left:0;z-index: 999;width: -2;height: 100%;width: 100%;">
+                        <div class="box" style="width: 700px;height: 380px;overflow: hidden;text-align: center;margin: auto;margin-top: 30px;" event.cancelBubble=true>
+                            <img id="images" src="./libs/timg.jpg">
+                        </div>
+                        <div style="color: #FFF;margin: 15px auto;width: 300px;">裁剪预览</div>
+                        <div style="width: 300px;height: 200px!important;overflow: hidden;margin: auto;">
+                                <div class="views" style="width: 300px;height: 200px!important;overflow: hidden;margin: auto;" event.cancelBubble=true>
+                                    </div>
+                        </div>
+                        
+                        <div style="width: 100%; width: 100%;height: 80px;text-align: center;margin-top: 10px;">
+                            <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
+                            font-size: 17px;margin-right: 15px;" id="chaijian" onclick="showFn()" event.cancelBubble=true>裁剪</button>
+                            <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
+                            font-size: 17px;margin-right: 15px;" onclick="submitFn()" event.cancelBubble=true>确认 裁剪</button>
+                            <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
+                            font-size: 17px;" onclick="showcCancelFn()" event.cancelBubble=true>取消裁剪</button>
+                        </div>
                     </div>
-                </div>
-                <script type="text/javascript" src="./libs/camera.js/hammer.min.js" ></script>
-                <script type="text/javascript" src="./libs/camera.js/lrz.all.bundle.js" ></script>
-                <script type="text/javascript" src="./libs/camera.js/iscroll-zoom-min.js" ></script>
-                <script type="text/javascript" src="./libs/camera.js/PhotoClip.js" ></script>
                 <tr>
                     <td>简介</td>
                     <td><input name="intro" class="easyui-textbox" style="width:100%;height:200px;" data-options="
@@ -552,44 +488,42 @@
 </body>
 <script>
     rowPad.afterPage()
-    var  clipArea = ''
-        $(".btn").click(function(){
-            $(".clipbg").fadeIn()
-                 clipArea = new  PhotoClip("#clipArea", {
-                    size: [730, 490],//裁剪框大小
-                    outputSize:[0,0],//打开图片大小，[0,0]表示原图大小
-                    file: "#file",
-                    ok: "#clipBtn",
-                    loadStart: function() { //图片开始加载的回调函数。this 指向当前 PhotoClip 的实例对象，并将正在加载的 file 对象作为参数传入。（如果是使用非 file 的方式加载图片，则该参数为图片的 url）
-                        $(".loading").removeClass("displaynone");
-    
-                    },
-                    loadComplete: function() {//图片加载完成的回调函数。this 指向当前 PhotoClip 的实例对象，并将图片的 <img> 对象作为参数传入。
-                        $(".loading").addClass("displaynone");
-    
-                    },
-                    done: function(dataURL) { //裁剪完成的回调函数。this 指向当前 PhotoClip 的实例对象，会将裁剪出的图像数据DataURL作为参数传入。			
-                        console.log(dataURL);//dataURL裁剪后图片地址base64格式提交给后台处理
-                        $(".clipbg").fadeOut()
-                        var target = this;
-                        debugger
-                        if(dataURL)
-                            common.BlockHeadUploadImage(dataURL,function(url){
-                                console.log(url)
-                                // console.log( $('.coverPad img').attr('src'))
-                                $('.coverPad img').attr('src',url)
+    var _file = '';
+            var _data = undefined
+            function saveFn(e,data){
+                console.log(data)
+                _data = undefined;
+                _data = data
+                _file =''
+                _file = e
+                console.log(e)
+            }
 
-                                rowPad.row.cover=url   
-                           })
-                           clipArea.destroy();
-                    }
-                });
-            })
-            $(".back").click(function(){
-                $(".clipbg").fadeOut()
-                if(clipArea)
-                    clipArea.destroy();
-            })
+            function showFn(){
+                cropper.crop()
+                
+            }
+            function submitFn(){
+                // console.dir(cropper.getCroppedCanvas().toDataURL('image/jpeg'))
+                if(_file)
+                    common.BlockHeadUploadImage(cropper.getCroppedCanvas().toDataURL('image/jpeg'),_file.name,function(url){
+                        console.log(_data)
+                        $('.coverPad img').attr('src',url)
+                        rowPad.row.cover=url
+                        $('#images').attr('src' , '')
+                        $('.photoPopup').css('display', 'none')
+                        cropper.destroy()
+                        _file = ''
+                    })
+                console.dir(_file)
+            }
+            function showcCancelFn(){
+                cropper.reset()
+                cropper.clear()
+                $('.photoPopup').css('display', 'none')
+                cropper.destroy()
+                _file = ''
+            }
 </script>
 
 </html>

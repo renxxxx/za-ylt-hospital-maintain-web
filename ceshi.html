@@ -5,8 +5,6 @@
 
         <title>忠安医联体运维-添加广告</title>
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-
-
         <!-- <script src="./libs/jquery.min.js"></script> -->
         <!-- <script src="./libs/jquery.cookie.js"></script> -->
         <script src="./libs/jquery-easyui-1.8.7/jquery.min.js"></script>
@@ -34,48 +32,84 @@
         <link rel="stylesheet" href="./libs/maintain/common.css" />
         <link  href="./libs/cropper/cropper.css" rel="stylesheet">
         <script src="./libs/cropper/cropper.js"></script>
-
-        
+        <style>
+            /* .cropper-wrap-box{
+                min-width: 800px!important;
+                min-height: 450px!important;
+            }
+            .cropper-canvas{
+                min-width: 800px!important;
+                min-height: 450px!important;
+            } */
+            
+        </style>
+        <script>
+             
+        </script>
     </head>
     <body style="margin:0;padding:0;">
-        
+        <button onclick="photoPopupShowFn()" event.cancelBubble=true>上传图片</button>
         <!-- 用一个块元素(容器)包装图像或画布元素 -->
-        <div class="box" style="width: 800px;height: 450px;overflow: hidden;">
-            <img id="images" src="./libs/timg.jpg">
+        <div class="photoPopup" onclick="photoPopupCloseFn()" style="display: none;position: fixed;background: black;top: 0;left:0;z-index: 999;width: -2;height: 100%;width: 100%;">
+            <div class="box" style="width: 800px;height: 450px;overflow: hidden;text-align: center;margin: auto;margin-top: 30px;" event.cancelBubble=true>
+                <img id="images" src="./libs/timg.jpg">
+            </div>
+            <div style="color: #FFF;margin: 15px auto;width: 300px;">裁剪预览</div>
+            <div class="views" style="width: 300px;height: 200px;overflow: hidden;margin: auto;" event.cancelBubble=true>
+            </div>
+            <div style="width: 100%; width: 100%;height: 80px;text-align: center;margin-top: 15px;">
+                <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
+                font-size: 17px;margin-right: 15px;" id="chaijian" onclick="showFn()" event.cancelBubble=true>裁剪</button>
+                <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
+                font-size: 17px;margin-right: 15px;" onclick="submitFn()" event.cancelBubble=true>确认 裁剪</button>
+                <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
+                font-size: 17px;" onclick="showcCancelFn()" event.cancelBubble=true>取消裁剪</button>
+            </div>
         </div>
-        <div class="views" style="width: 300px;height: 200px;overflow: hidden;">
-        </div>
-        <button id="chaijian" onclick="showFn()">裁剪</button>
-        <button onclick="showcCancelFn()">裁剪</button>
     </body>
     <script>
-        var cropper = new Cropper(images, {
-            aspectRatio: 16 / 9,     //默认裁剪框大小
-            viewMode:(1),
-            modal : false,
-            guides : false, 
-            preview:'.views',
-            background:false,
-            autoCrop:false,
-            crop: function (e) {
-                console.dir(e)
-            },
-            cropend:function(e){
-                console.dir(e)
-            },
-            zoom:function(e){
-                console.dir(e)
-            },
-        });
+        var cropper = ''
+       
         function showFn(){
+            cropper.crop()
+            
+        }
+        function submitFn(){
             debugger
             console.log('s')
-            cropper('crop')
-            console.dir(cropper.getCroppedCanvas())
+            console.dir(cropper.getCroppedCanvas().toDataURL('image/jpeg'))
+            common.BlockHeadUploadImage(cropper.getCroppedCanvas().toDataURL('image/jpeg'),function(url){
+                console.log(url)
+                rowPad.row.cover=url   
+            })
         }
         function showcCancelFn(){
-            debugger
-            $('#image').cropper('clear');
+            cropper.reset()
+            cropper.clear()
+            $('.photoPopup').css('display', 'none')
+        }
+        function photoPopupShowFn(){
+            console.log('s')
+            $('.photoPopup').css('display', 'inline-block')
+            const images = document.getElementById('images');
+            cropper = new Cropper(images, {
+                aspectRatio: 16 / 9,     //默认裁剪框大小
+                viewMode:(1,3),
+                modal : false,
+                guides : false, 
+                preview:'.views',
+                background:false,
+                autoCrop:false,
+                crop: function (e) {
+                    console.dir(e)
+                },
+                cropend:function(e){
+                    console.dir(e)
+                },
+                zoom:function(e){
+                    console.dir(e)
+                },
+            });
         }
     </script>
 </html>
