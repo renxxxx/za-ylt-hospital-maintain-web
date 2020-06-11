@@ -286,10 +286,10 @@
                                                     guides : false, 
                                                     preview:'.views',
                                                     background:false,
-                                                    autoCrop:false,
+                                                    autoCrop:true,
                                                     crop: function (e) {
                                                         console.log(typeof e.detail.width)
-                                                        $('.cropper-crop-box p').html(String(e.detail.width).substring(0,6)+' × '+String(e.detail.height).substring(0,6))
+                                                        $('.cropper-crop-box p').html(String(e.detail.width).substring(0,3)+' × '+String(e.detail.height).substring(0,3))
                                                     },
                                                     cropend:function(e){
                                                     },
@@ -326,7 +326,7 @@
                                 <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
                                 font-size: 17px;margin-right: 15px;" id="chaijian" onclick="showFn()" event.cancelBubble=true>裁剪</button>
                                 <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
-                                font-size: 17px;margin-right: 15px;" onclick="submitFn()" event.cancelBubble=true>确认 裁剪</button>
+                                font-size: 17px;margin-right: 15px;" onclick="submitFn()" event.cancelBubble=true>确认裁剪</button>
                                 <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
                                 font-size: 17px;" onclick="showcCancelFn()" event.cancelBubble=true>取消裁剪</button>
                             </div>
