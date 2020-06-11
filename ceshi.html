@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <title>忠安医联体运维-添加广告</title>
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+        <!-- <script src="./libs/jquery.min.js"></script> -->
+        <!-- <script src="./libs/jquery.cookie.js"></script> -->
+        <script src="./libs/jquery-easyui-1.8.7/jquery.min.js"></script>
+        <script src="./libs/carhartl-jquery-cookie-92b7715/jquery.cookie.js"></script>
+        <script src="./libs/layer/layer.js"></script>
+        <script src="./libs/moment.js"></script>
+        <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/default/easyui.css">
+        <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/icon.css">
+        <script type="text/javascript" src="./libs/jquery-easyui-1.8.7/jquery.easyui.min.js"></script>
+        <script type="text/javascript" src="./libs/jquery-easyui-1.8.7/locale/easyui-lang-zh_CN.js"></script>
+        <!-- <link rel="stylesheet" href="./libs/jQueryViewer20160329/css/viewer.min.css"> -->
+        <!-- <script src="./libs/jQueryViewer20160329/js/viewer.min.js"></script> -->
+        <!-- <script src="./libs/jQueryViewer20160329/js/viewer-jquery.min.js"></script> -->
+        <link rel="stylesheet" href="./libs/viewer-master/dist/viewer.min.css">
+        <script src="./libs/viewer-master/dist/viewer.min.js"></script>
+        <script src="./libs/common.js"></script>
+        <link rel="stylesheet" href="./libs/common.css" />
+        <link rel="stylesheet" href="./libs/kindeditor/themes/default/default.css" />
+        <link rel="stylesheet" href="./libs/kindeditor/plugins/code/prettify.css" />
+        <script charset="utf-8" src="./libs/kindeditor/kindeditor-all.js"></script>
+        <script charset="utf-8" src="./libs/kindeditor/lang/zh-CN.js"></script>
+        <script charset="utf-8" src="./libs/kindeditor/plugins/code/prettify.js"></script>
+
+        <script src="./libs/maintain/common.js"></script>
+        <link rel="stylesheet" href="./libs/maintain/common.css" />
+        <link  href="./libs/cropper/cropper.css" rel="stylesheet">
+        <script src="./libs/cropper/cropper.js"></script>
+        <style>
+            /* .cropper-wrap-box{
+                min-width: 800px!important;
+                min-height: 450px!important;
+            }
+            .cropper-canvas{
+                min-width: 800px!important;
+                min-height: 450px!important;
+            } */
+            
+        </style>
+        <script>
+             
+        </script>
+    </head>
+    <body style="margin:0;padding:0;">
+        <button onclick="photoPopupShowFn()" event.cancelBubble=true>上传图片</button>
+        <!-- 用一个块元素(容器)包装图像或画布元素 -->
+        <div class="photoPopup" onclick="photoPopupCloseFn()" style="display: none;position: fixed;background: black;top: 0;left:0;z-index: 999;width: -2;height: 100%;width: 100%;">
+            <div class="box" style="width: 800px;height: 450px;overflow: hidden;text-align: center;margin: auto;margin-top: 30px;" event.cancelBubble=true>
+                <img id="images" src="./libs/timg.jpg">
+            </div>
+            <div style="color: #FFF;margin: 15px auto;width: 300px;">裁剪预览</div>
+            <div class="views" style="width: 300px;height: 200px;overflow: hidden;margin: auto;" event.cancelBubble=true>
+            </div>
+            <div style="width: 100%; width: 100%;height: 80px;text-align: center;margin-top: 15px;">
+                <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
+                font-size: 17px;margin-right: 15px;" id="chaijian" onclick="showFn()" event.cancelBubble=true>裁剪</button>
+                <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
+                font-size: 17px;margin-right: 15px;" onclick="submitFn()" event.cancelBubble=true>确认 裁剪</button>
+                <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
+                font-size: 17px;" onclick="showcCancelFn()" event.cancelBubble=true>取消裁剪</button>
+            </div>
+        </div>
+    </body>
+    <script>
+        var cropper = ''
+       
+        function showFn(){
+            cropper.crop()
+            
+        }
+        function submitFn(){
+            debugger
+            console.log('s')
+            console.dir(cropper.getCroppedCanvas().toDataURL('image/jpeg'))
+            common.BlockHeadUploadImage(cropper.getCroppedCanvas().toDataURL('image/jpeg'),function(url){
+                console.log(url)
+                rowPad.row.cover=url   
+            })
+        }
+        function showcCancelFn(){
+            cropper.reset()
+            cropper.clear()
+            $('.photoPopup').css('display', 'none')
+        }
+        function photoPopupShowFn(){
+            console.log('s')
+            $('.photoPopup').css('display', 'inline-block')
+            const images = document.getElementById('images');
+            cropper = new Cropper(images, {
+                aspectRatio: 16 / 9,     //默认裁剪框大小
+                viewMode:(1,3),
+                modal : false,
+                guides : false, 
+                preview:'.views',
+                background:false,
+                autoCrop:false,
+                crop: function (e) {
+                    console.dir(e)
+                },
+                cropend:function(e){
+                    console.dir(e)
+                },
+                zoom:function(e){
+                    console.dir(e)
+                },
+            });
+        }
+    </script>
+</html>
+
+
+
