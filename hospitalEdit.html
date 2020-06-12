@@ -125,7 +125,7 @@
                                                             provinceList3 = provinceList[address.indexOf].children[address.index2Of].children
                                                             //provinceList[address.indexOf].children[address.index2Of].children
                                                             console.dir(provinceList3)
-                                                            $('.hospitalName').html(rowPad.row.name)
+                                                            
                                                             // return thisValue.cityItem
                                                         }
                                                     });
@@ -139,6 +139,7 @@
                         })
 
                         rowPad.row = data.data;
+                        $('.hospitalName').html(data.data.row.name)
                         address.area1Id = data.data.adminarea1Id
                         address.area1Text = data.data.adminarea1Name
                         address.area2Id = data.data.adminarea2Id
