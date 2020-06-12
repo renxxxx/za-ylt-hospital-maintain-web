@@ -139,7 +139,8 @@
                         })
 
                         rowPad.row = data.data;
-                        $('.hospitalName').html(data.data.row.name)
+                        debugger
+                        
                         address.area1Id = data.data.adminarea1Id
                         address.area1Text = data.data.adminarea1Name
                         address.area2Id = data.data.adminarea2Id
@@ -634,6 +635,7 @@
     </div>
 </body>
 <script>
+    $('.hospitalName').html(rowPad.row.name)
         rowPad.afterPage()
             var _file = '';
             var _data = undefined
