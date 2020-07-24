@@ -9,34 +9,44 @@
 
     <!-- <script src="./libs/jquery.min.js"></script> -->
     <!-- <script src="./libs/jquery.cookie.js"></script> -->
-    <script src="./libs/layer/layer.js"></script>
     <script src="./libs/jquery-easyui-1.8.7/jquery.min.js"></script>
     <script src="./libs/carhartl-jquery-cookie-92b7715/jquery.cookie.js"></script>
+    <script src="./libs/layer/layer.js"></script>
     <script src="./libs/moment.js"></script>
     <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/default/easyui.css">
     <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/icon.css">
     <script type="text/javascript" src="./libs/jquery-easyui-1.8.7/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="./libs/jquery-easyui-1.8.7/locale/easyui-lang-zh_CN.js"></script>
-
     <!-- <link rel="stylesheet" href="./libs/jQueryViewer20160329/css/viewer.min.css"> -->
     <!-- <script src="./libs/jQueryViewer20160329/js/viewer.min.js"></script> -->
     <!-- <script src="./libs/jQueryViewer20160329/js/viewer-jquery.min.js"></script> -->
-
     <link rel="stylesheet" href="./libs/viewer-master/dist/viewer.min.css">
     <script src="./libs/viewer-master/dist/viewer.min.js"></script>
-
     <script src="./libs/common.js"></script>
     <link rel="stylesheet" href="./libs/common.css" />
     <script src="./libs/jquery.extend.oneall.js"></script>
-    <script charset="utf-8" src="./tinymce/tinymce.min.js"></script>
+    <link rel="stylesheet" href="./libs/kindeditor/themes/default/default.css" />
+    <link rel="stylesheet" href="./libs/kindeditor/plugins/code/prettify.css" />
+    <script charset="utf-8" src="./libs/kindeditor/kindeditor-all.js"></script>
+    <script charset="utf-8" src="./libs/kindeditor/lang/zh-CN.js"></script>
+    <script charset="utf-8" src="./libs/kindeditor/plugins/code/prettify.js"></script>
 
-    <!-- <script src="/hospital/maintain/libs/common.js"></script> -->
-    <!-- <link rel="stylesheet" href="/hospital-maintain/libs/common.css" /> -->
+    <!-- <script src="/hospital/maintain./libs/common.js"></script> -->
+    <!-- <link rel="stylesheet" href="/hospital/maintain./libs/common.css" /> -->
+
     <script src="./libs/maintain/common.js"></script>
     <link rel="stylesheet" href="./libs/maintain/common.css" />
     <link  href="./libs/cropper/cropper.css" rel="stylesheet">
     <script src="./libs/cropper/cropper.js"></script>
 </head>
+
+<style>
+    #rowPad .show {}
+
+    #rowPad .edit {
+        display: none;
+    }
+</style>
 <style type="text/css">
     .size{
             font-size: 12px;
@@ -56,101 +66,66 @@
 <script>
 
 
+
     var queryStringObject = common.queryStringObject();
 
     var rowPad = {
         selector: "#rowPad",
-        param: { token: null },
+        param: { token: null, articleId: null },
         row: {
 
-        },
-        contentEditor: null,
+        }, contentKindEditor: null,
         beforePage: function () {
+            rowPad.param.articleId = queryStringObject.articleId
+
+            $.ajax({
+                type: 'get',
+                url: `/hospital/maintain/article/${rowPad.param.articleId}`,
+                async: false,
+                data: { token: rowPad.param.token },
+                success: function (data) {
+                    if (data.codeMsg)
+                        alert(data.codeMsg)
+                    if (data.code == 0) {
+                        rowPad.row = data.data;
+                    } else {
+                        hospitalCommon.breakCodeProcess(data.code, data.codeMsg)
+                    }
+                }
+            })
         },
         afterPage: function () {
             $(rowPad.selector).find('[name=dg]').datagrid()
 
-            rowPad.contentEditor = tinymce.init({
-    selector: '[name=content]',
-    height:'500px',
-    mode : "textareas",
-    plugins : 'advlist autolink link image lists charmap print preview media paste save imagetools template pagebreak hr autosave fullpage fullscreen table textcolor textpattern wordcount insertdatetime legacyoutput pageembed code bdmap',
-    automatic_uploads: false,
-    forced_root_block: 'div',
-    force_p_newlines: false,
-    images_upload_url: 'postAcceptor.php',
-    language: "zh_CN",
-    init_instance_callback : function(editor) {
-        debugger;
-        if(rowPad.row.contentBtId)
-            $.get('/bigtxt/'+rowPad.row.contentBtId+'/'+rowPad.row.contentBtId,function(res){
-                editor.setContent(res)
+            rowPad.contentKindEditor = KindEditor.create('#rowPad [name=content]', {
+                cssPath: './libs/kindeditor/plugins/code/prettify.css',
+                uploadJson: '/kindeditor/upload_json.jsp',
+                fileManagerJson: '/kindeditor/file_manager_json.jsp',
+                allowFileManager: true,
+                afterCreate: function () {
+                    var self = this;
+                    KindEditor.ctrl(document, 13, function () {
+                        self.sync();
+                        document.forms['example'].submit();
+                    });
+                    KindEditor.ctrl(self.edit.doc, 13, function () {
+                        self.sync();
+                        document.forms['example'].submit();
+                    });
+
+                    debugger
+                    if (rowPad.row.contentBtId)
+                        $.get(`/bigtxt/${rowPad.row.contentBtId}/${rowPad.row.contentBtId}?rand=${Math.random()}`, function (data) {
+                            self.html(data)
+                        })
+                }
             })
-    },
-    file_picker_callback:function(callback,value,meta){
-        debugger
-        $(`<input type='file'>`).change(function(){
-            var target = this;
-                                if(this.files.length>0){
-                                    var file = this.files[0];
-                                    var fd = new FormData()
-                                    fd.append('file', file);
-                                    $.ajax({
-                                        url: '/upload-static-file?',
-                                        type: 'POST',
-                                        data: fd,
-                                        cache: false,
-                                        processData: false,
-                                        contentType: false,
-                                        async: true,
-                                        success: function (res) {
-                                            if (res.codeMsg)
-                                                $.messager.alert('提示',res.codeMsg)
-                                            if (res.code == 0) {
-                                                callback(res.data.url)
-                                                target.value=null
-                                                $(target).remove()
-                                            }
-                                        }
-                                    })
-                                }
-        }).click()
-       
-    },
-    images_upload_handler: function (blobInfo, success, failure) {
-        debugger
-        var xhr, formData;
-
-        xhr = new XMLHttpRequest();
-        xhr.withCredentials = false;
-        xhr.open('POST', 'postAcceptor.php');
-
-        xhr.onload = function() {
-            var json;
-            if (xhr.status != 200) {
-                failure('HTTP Error: ' + xhr.status);
-                return;
-            }
-            json = JSON.parse(xhr.responseText);
-            if (!json || typeof json.location != 'string') {
-                failure('Invalid JSON: ' + xhr.responseText);
-                return;
-            }
-            success(json.location);
-        };
-        formData = new FormData();
-        formData.append('file', blobInfo.blob(), blobInfo.filename());
-        xhr.send(formData);
-    }
-  });
-
-
         },
-        rowAdd: function () {
+        rowAlter: function () {
             $.ajax({
                 type: 'post',
-                url: '/hospital/maintain/article-add',
-                data: Object.assign({ token: rowPad.param.token, content: tinyMCE.editors[0].getContent() }, rowPad.row),
+                url: '/hospital/maintain/article-alter',
+                data: Object.assign({ token: rowPad.param.token, articleId: rowPad.param.articleId, content: rowPad.contentKindEditor.html() }, rowPad.row),
                 success: function (data) {
                     if (data.codeMsg)
                         alert(data.codeMsg)
@@ -166,7 +141,7 @@
         }
     }
 
-    rowPad.beforePage();
+    rowPad.beforePage()
 
     var loadingPad = {
         param: {},
@@ -178,6 +153,7 @@
     $.parser.onComplete = function () {
         loadingPad.remove()
     }
+
 </script>
 
 <body style="margin:0;padding:0;">
@@ -198,7 +174,7 @@
                 <tr>
                     <td>文章名称</td>
                     <td><input name="name" class="easyui-textbox" style="width:100%" data-options="
-                        value:'',
+                        value:rowPad.row.name,
                         iconWidth:20,
                         icons:[{
                             iconCls:'icon-clear',
@@ -300,7 +276,7 @@
                 <tr>
                     <td>简介</td>
                     <td><input name="intro" class="easyui-textbox" style="width:100%;height:200px;" data-options="
-                            value:'',
+                            value:rowPad.row.intro,
                             multiline:true,
                             onChange:function(newValue, oldValue){
                                 rowPad.row.intro=newValue
@@ -311,10 +287,16 @@
                     <td><textarea name="content" style="width: 100%;height: 30px;padding:1px 4px"></textarea></td>
                 </tr>
                 <tr>
+                    <td>浏览量</td>
+                    <td>
+                        <div class="easyui-panel" style="background-color:rgba(0, 0, 0, 0);"
+                            data-options="content:rowPad.row.viewCount+'',border:false"></div>
+                    </td>
+                </tr>
+                <tr>
                     <td>基础浏览量</td>
                     <td><input name="viewCountBase" class="easyui-numberbox" style="width:100%" data-options="
-                                prompt:0,
-                                value:'',
+                                value:rowPad.row.viewCountBase,
                                 precision:0,
                                 iconWidth:20,
                                 icons:[{
@@ -328,10 +310,16 @@
                                 }" style="width:200px"></td>
                 </tr>
                 <tr>
+                    <td>分享量</td>
+                    <td>
+                        <div class="easyui-panel" style="background-color:rgba(0, 0, 0, 0);"
+                            data-options="content:rowPad.row.shareCount+'',border:false"></div>
+                    </td>
+                </tr>
+                <tr>
                     <td>基础分享量</td>
                     <td><input name="shareCountBase" class="easyui-numberbox" style="width:100%" data-options="
-                                    prompt:0,
-                                    value:'',
+                                    value:rowPad.row.shareCountBase,
                                     precision:0,
                                     iconWidth:20,
                                     icons:[{
@@ -344,9 +332,12 @@
                                         rowPad.row.shareCountBase=newValue
                                     }" style="width:200px"></td>
                 </tr>
-                <!-- <tr>
+                <tr>
                     <td>冻结</td>
-                    <td><input name="frozen" class="easyui-combobox" style="width:100%" data-options="editable:false,panelHeight:'auto',value:0,data:[
+                    <td><input name="frozen" class="easyui-combobox" style="width:100%" data-options="
+                                    value:rowPad.row.frozen,
+                                    editable:false,panelHeight:'auto',
+                                    data:[
                                     {
                                          text: '否',
                                          value: '0'
@@ -364,12 +355,11 @@
                                      onChange:function(newValue, oldValue){
                                         rowPad.row.frozen=newValue
                                      }" /></td>
-                </tr> -->
+                </tr>
                 <tr>
                     <td>排序号</td>
                     <td><input name="orderNo" class="easyui-numberbox" style="width:100%" data-options="
-                                    prompt:'9999',
-                                    value:'',
+                                    value:rowPad.row.orderNo,
                                     precision:2,
                                     iconWidth:20,
                                     icons:[{
@@ -385,8 +375,7 @@
                 <tr>
                     <td>添加时间</td>
                     <td><input name="addTime" class="easyui-datetimebox" style="width:100%" data-options="
-                                        prompt:moment().format('YYYY-MM-DD H:mm:ss'),
-                                        value:'',
+                                        value:moment(rowPad.row.addTime).format('YYYY-MM-DD H:mm:ss'),
                                         editable:false,
                                         icons:[{
                                             iconCls:'icon-clear',
@@ -401,8 +390,7 @@
                 <tr>
                     <td>更新时间</td>
                     <td><input name="alterTime" class="easyui-datetimebox" style="width:100%" data-options="
-                                            prompt:moment().format('YYYY-MM-DD H:mm:ss'),
-                                            value:'',
+                                            value:moment(rowPad.row.alterTime).format('YYYY-MM-DD H:mm:ss'),
                                             editable:false,
                                             icons:[{
                                                 iconCls:'icon-clear',
@@ -414,12 +402,40 @@
                                                 rowPad.row.alterTime=newValue
                                             }"></td>
                 </tr>
+                <tr>
+                    <td>删除</td>
+                    <td><input name="del" class="easyui-combobox" style="width:100%" data-options="
+                                        value:rowPad.row.del,
+                                        editable:false,
+                                        panelHeight:'auto',
+                                        data:[
+                                        {
+                                            text: '否',
+                                            value: '0'
+                                        },{
+                                            text: '是',
+                                            value: '1'
+                                        }],
+                                         iconWidth:20,
+                                         icons:[{
+                                             iconCls:'icon-clear',
+                                             handler: function(e){
+                                                 $(e.data.target).combobox('setValue','');
+                                             }
+                                         }],
+                                         onChange:function(newValue, oldValue){
+                                            rowPad.row.del=newValue
+                                         }" /></td>
+                </tr>
             </tbody>
         </table>
         <div style="margin-top:5px;">
-            <a href="JavaScript:void(0)" class="easyui-linkbutton" iconCls="icon-add" onclick="rowPad.rowAdd()">确认添加</a>
-            <a href="JavaScript:void(0)" class="easyui-linkbutton" iconCls="icon-sweeper"
-                onclick="location.reload()">清空</a>
+            <a href="JavaScript:void(0)" class="easyui-linkbutton show" iconCls="icon-edit"
+                onclick="$('.edit').css('display','inline-block');$('.show').hide();">修改</a>
+            <a href="JavaScript:void(0)" class="easyui-linkbutton edit" iconCls="icon-save"
+                onclick="rowPad.rowAlter()">确认修改</a>
+            <a href="JavaScript:void(0)" class="easyui-linkbutton edit" iconCls="icon-cancel"
+                onclick="location.reload()">取消修改</a>
         </div>
     </div>
 </body>
@@ -446,7 +462,7 @@
                     common.BlockHeadUploadImage(cropper.getCroppedCanvas().toDataURL('image/jpeg'),_file.name,function(url){
                         console.log(_data)
                         $('.coverPad img').attr('src',url)
-                        rowPad.row.cover=url
+                        rowPad.row.cover=url  
                         $('#images').attr('src' , '')
                         $('.photoPopup').css('display', 'none')
                         cropper.destroy()

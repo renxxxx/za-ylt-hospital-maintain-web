@@ -25,11 +25,8 @@
     <script src="./libs/common.js"></script>
     <link rel="stylesheet" href="./libs/common.css" />
     <script src="./libs/jquery.extend.oneall.js"></script>
-    <link rel="stylesheet" href="./libs/kindeditor/themes/default/default.css" />
-    <link rel="stylesheet" href="./libs/kindeditor/plugins/code/prettify.css" />
-    <script charset="utf-8" src="./libs/kindeditor/kindeditor-all.js"></script>
-    <script charset="utf-8" src="./libs/kindeditor/lang/zh-CN.js"></script>
-    <script charset="utf-8" src="./libs/kindeditor/plugins/code/prettify.js"></script>
+    <script charset="utf-8" src="./tinymce/tinymce.min.js"></script>
+
 
     <!-- <script src="/hospital/maintain./libs/common.js"></script> -->
     <!-- <link rel="stylesheet" href="/hospital/maintain./libs/common.css" /> -->
@@ -74,7 +71,7 @@
         param: { token: null, articleId: null },
         row: {
 
-        }, contentKindEditor: null,
+        }, contentEditor: null,
         beforePage: function () {
             rowPad.param.articleId = queryStringObject.articleId
 
@@ -97,35 +94,87 @@
         afterPage: function () {
             $(rowPad.selector).find('[name=dg]').datagrid()
 
-            rowPad.contentKindEditor = KindEditor.create('#rowPad [name=content]', {
-                cssPath: './libs/kindeditor/plugins/code/prettify.css',
-                uploadJson: '/kindeditor/upload_json.jsp',
-                fileManagerJson: '/kindeditor/file_manager_json.jsp',
-                allowFileManager: true,
-                afterCreate: function () {
-                    var self = this;
-                    KindEditor.ctrl(document, 13, function () {
-                        self.sync();
-                        document.forms['example'].submit();
-                    });
-                    KindEditor.ctrl(self.edit.doc, 13, function () {
-                        self.sync();
-                        document.forms['example'].submit();
-                    });
-
-                    debugger
-                    if (rowPad.row.contentBtId)
-                        $.get(`/bigtxt/${rowPad.row.contentBtId}/${rowPad.row.contentBtId}?rand=${Math.random()}`, function (data) {
-                            self.html(data)
-                        })
-                }
+            rowPad.contentEditor = tinymce.init({
+    selector: '[name=content]',
+    height:'500px',
+    mode : "textareas",
+    plugins : 'advlist autolink link image lists charmap print preview media paste save imagetools template pagebreak hr autosave fullpage fullscreen table textcolor textpattern wordcount insertdatetime legacyoutput pageembed code bdmap',
+    automatic_uploads: false,
+    forced_root_block: 'div',
+    force_p_newlines: false,
+    images_upload_url: 'postAcceptor.php',
+    language: "zh_CN",
+    init_instance_callback : function(editor) {
+        debugger;
+        
+        if(rowPad.row.contentBtId)
+            $.get('/bigtxt/'+rowPad.row.contentBtId+'/'+rowPad.row.contentBtId+'?rand='+Math.random(),function(res){
+                editor.setContent(res)
             })
+    },
+    file_picker_callback:function(callback,value,meta){
+        debugger
+        $(`<input type='file'>`).change(function(){
+            var target = this;
+                                if(this.files.length>0){
+                                    var file = this.files[0];
+                                    var fd = new FormData()
+                                    fd.append('file', file);
+                                    $.ajax({
+                                        url: '/upload-static-file?',
+                                        type: 'POST',
+                                        data: fd,
+                                        cache: false,
+                                        processData: false,
+                                        contentType: false,
+                                        async: true,
+                                        success: function (res) {
+                                            if (res.codeMsg)
+                                                $.messager.alert('提示',res.codeMsg)
+                                            if (res.code == 0) {
+                                                callback(res.data.url)
+                                                target.value=null
+                                                $(target).remove()
+                                            }
+                                        }
+                                    })
+                                }
+        }).click()
+       
+    },
+    images_upload_handler: function (blobInfo, success, failure) {
+        debugger
+        var xhr, formData;
+
+        xhr = new XMLHttpRequest();
+        xhr.withCredentials = false;
+        xhr.open('POST', 'postAcceptor.php');
+
+        xhr.onload = function() {
+            var json;
+            if (xhr.status != 200) {
+                failure('HTTP Error: ' + xhr.status);
+                return;
+            }
+            json = JSON.parse(xhr.responseText);
+            if (!json || typeof json.location != 'string') {
+                failure('Invalid JSON: ' + xhr.responseText);
+                return;
+            }
+            success(json.location);
+        };
+        formData = new FormData();
+        formData.append('file', blobInfo.blob(), blobInfo.filename());
+        xhr.send(formData);
+    }
+  });
+
         },
         rowAlter: function () {
             $.ajax({
                 type: 'post',
                 url: '/hospital/maintain/article-alter',
-                data: Object.assign({ token: rowPad.param.token, articleId: rowPad.param.articleId, content: rowPad.contentKindEditor.html() }, rowPad.row),
+                data: Object.assign({ token: rowPad.param.token, articleId: rowPad.param.articleId, content: tinyMCE.editors[0].getContent()}, rowPad.row),
                 success: function (data) {
                     if (data.codeMsg)
                         alert(data.codeMsg)
