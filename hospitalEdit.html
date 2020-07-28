@@ -401,6 +401,7 @@
                     </tr>
                     <div class="clipbg displaynone">
                             <div id="clipArea"></div>
+                            <div id="clipArea2"></div>
                             <div class="loading displaynone">正在载入图片...</div>
                             <div class="footer">
                                 <dl>
@@ -659,10 +660,9 @@
 <script>
         rowPad.afterPage()
     
-        // var clipArea2 = ''
         $(".btn").click(function(){
                 $(".clipbg").fadeIn()
-                var  clipArea1 = new  PhotoClip("#clipArea", {
+                var clipArea = new  PhotoClip("#clipArea", {
                     size: [730, 490],//裁剪框大小
                     outputSize:[0,0],//打开图片大小，[0,0]表示原图大小
                     file: "#file",
@@ -688,14 +688,14 @@
 
                                 rowPad.row.cover=url   
                            })
-                        //    clipArea2.destroy();
+                           clipArea.destroy();
                     }
                 });
             })
-           
+            var  clipArea2 = ''
             $(".btn2").click(function(){
                 $(".clipbg").fadeIn()
-                var  clipArea2  = new  PhotoClip("#clipArea", {
+                clipArea = new  PhotoClip("#clipArea", {
                     size: [730, 490],//裁剪框大小
                     outputSize:[0,0],//打开图片大小，[0,0]表示原图大小
                     file: "#file",
@@ -721,18 +721,17 @@
 
                                 rowPad.row.license=url   
                            })
-                        //    clipArea1.destroy();
+                           clipArea.destroy();
                     }
                 });
             })
             
                 $(".back").click(function(){
                     $(".clipbg").fadeOut()
-                    // clipArea1.destroy();
+                    // if(clipArea)
+                    //     clipArea.destroy();
                     // if(clipArea2)
                     //     clipArea2.destroy();
-                    // if(clipArea1)
-                    //     clipArea1.destroy();
                     // $('.photo-clip-rotation-layer img').attr('src','')
                 })
     </script>
