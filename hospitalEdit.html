@@ -332,6 +332,19 @@
                             </div>
                         </td>
                     </tr>
+<<<<<<< HEAD
+                    <div class="clipbg displaynone">
+                            <div id="clipArea"></div>
+                            <div id="clipArea2"></div>
+                            <div class="loading displaynone">正在载入图片...</div>
+                            <div class="footer">
+                                <dl>
+                                    <dd style="background: #fe1041; color: #ffffff;border: none;margin-inline-start: 0px;">打开相册<input type="file" id="file" accept="image/*" ></dd>
+                                    <dd id="clipBtn">完成裁剪</dd>
+                                </dl>
+                                <div class="back">取消</div>
+                            </div>
+=======
                     <div class="photoPopup" style="display: none;position: fixed;background: black;top: 0;left:0;z-index: 999;width: -2;height: 100%;width: 100%">
                         <div class="box" style="width: 66%;height: 52%;overflow: hidden;text-align: center;margin: auto;margin-top: 30px;" event.cancelBubble=true>
                             <img id="images" src="./libs/timg.jpg">
@@ -348,6 +361,7 @@
                             <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
                             font-size: 17px;" onclick="showcCancelFn()" event.cancelBubble=true>取消裁剪</button>
                         </div>
+>>>>>>> 3a6877230502e6e33a3c0cd12b170d731a036add
                     </div>
 
 
@@ -637,6 +651,83 @@
 <script>
     $('.hospitalName').html(rowPad.row.name)
         rowPad.afterPage()
+<<<<<<< HEAD
+    
+        $(".btn").click(function(){
+                $(".clipbg").fadeIn()
+                var clipArea = new  PhotoClip("#clipArea", {
+                    size: [730, 490],//裁剪框大小
+                    outputSize:[0,0],//打开图片大小，[0,0]表示原图大小
+                    file: "#file",
+                    ok: "#clipBtn",
+                    loadStart: function() { //图片开始加载的回调函数。this 指向当前 PhotoClip 的实例对象，并将正在加载的 file 对象作为参数传入。（如果是使用非 file 的方式加载图片，则该参数为图片的 url）
+                        $(".loading").removeClass("displaynone");
+    
+                    },
+                    loadComplete: function() {//图片加载完成的回调函数。this 指向当前 PhotoClip 的实例对象，并将图片的 <img> 对象作为参数传入。
+                        $(".loading").addClass("displaynone");
+    
+                    },
+                    done: function(dataURL) { //裁剪完成的回调函数。this 指向当前 PhotoClip 的实例对象，会将裁剪出的图像数据DataURL作为参数传入。			
+                        console.log(dataURL);//dataURL裁剪后图片地址base64格式提交给后台处理
+                        $(".clipbg").fadeOut()
+                        var target = this;
+                        debugger
+                        if(dataURL)
+                            common.BlockHeadUploadImage(dataURL,function(url){
+                                console.log(url)
+                                // console.log( $('.coverPad img').attr('src'))
+                                $('.cover img').attr('src',url)
+
+                                rowPad.row.cover=url   
+                           })
+                           clipArea.destroy();
+                    }
+                });
+            })
+            var  clipArea2 = ''
+            $(".btn2").click(function(){
+                $(".clipbg").fadeIn()
+                clipArea = new  PhotoClip("#clipArea", {
+                    size: [730, 490],//裁剪框大小
+                    outputSize:[0,0],//打开图片大小，[0,0]表示原图大小
+                    file: "#file",
+                    ok: "#clipBtn",
+                    loadStart: function() { //图片开始加载的回调函数。this 指向当前 PhotoClip 的实例对象，并将正在加载的 file 对象作为参数传入。（如果是使用非 file 的方式加载图片，则该参数为图片的 url）
+                        $(".loading").removeClass("displaynone");
+    
+                    },
+                    loadComplete: function() {//图片加载完成的回调函数。this 指向当前 PhotoClip 的实例对象，并将图片的 <img> 对象作为参数传入。
+                        $(".loading").addClass("displaynone");
+    
+                    },
+                    done: function(dataURL) { //裁剪完成的回调函数。this 指向当前 PhotoClip 的实例对象，会将裁剪出的图像数据DataURL作为参数传入。			
+                        console.log(dataURL);//dataURL裁剪后图片地址base64格式提交给后台处理
+                        $(".clipbg").fadeOut()
+                        var target = this;
+                        debugger
+                        if(dataURL)
+                            common.BlockHeadUploadImage(dataURL,function(url){
+                                console.log(url)
+                                // console.log( $('.coverPad img').attr('src'))
+                                $('.license img').attr('src',url)
+
+                                rowPad.row.license=url   
+                           })
+                           clipArea.destroy();
+                    }
+                });
+            })
+            
+                $(".back").click(function(){
+                    $(".clipbg").fadeOut()
+                    // if(clipArea)
+                    //     clipArea.destroy();
+                    // if(clipArea2)
+                    //     clipArea2.destroy();
+                    // $('.photo-clip-rotation-layer img').attr('src','')
+                })
+=======
             var _file = '';
             var _data = undefined
             function saveFn(e,data){
@@ -682,5 +773,6 @@
                 cropper.destroy()
                 _file = ''
             }
+>>>>>>> 3a6877230502e6e33a3c0cd12b170d731a036add
     </script>
 </html>

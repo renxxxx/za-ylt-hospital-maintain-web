@@ -403,6 +403,98 @@
                                 }]
                                 "></td>
                         </tr>
+						
+						<tr>
+						        <td>类型-活动</td>
+						        <td><input class="easyui-combobox" name="type5ActivityId" style="width:100%;" data-options="
+						            valueField:'activityId',
+						            textField:'name',
+						            panelHeight:'auto',
+						            mode:'remote',
+						            onShowPanel:function(){
+						                $(this).combobox('reload')
+						            },
+						            loader: function (param, success, error) {
+						                debugger
+						                param.kw=param.q;
+						                param.ps = param.rows;
+						                param.pn = param.page;
+						                $.ajax({
+						                    url: '/hospital/maintain/activities',
+						                    type: 'get',
+						                    data: param,
+						                    success: function (data) {
+						                        if (data.code != 0) {
+						                            return false;
+						                        } else {
+						                            success(data.data);
+						                        }
+						    
+						                    }
+						                })
+						            },
+						            onChange:function(newValue, oldValue){
+						                rowPad.row.type5ActivityId=newValue
+						            },
+						            loadFilter: function (data) {
+						                debugger
+						                return data.rows;
+						            },
+						            iconWidth:20,
+						            icons:[{
+						                iconCls:'icon-clear',
+						                handler: function(e){
+						                    $(e.data.target).combobox('setValue','');
+						                }
+						            }]
+						            "></td>
+						    </tr>
+						
+						<tr>
+						        <td>类型-案例</td>
+						        <td><input class="easyui-combobox" name="type4ProjectId" style="width:100%;" data-options="
+						            valueField:'projectId',
+						            textField:'name',
+						            panelHeight:'auto',
+						            mode:'remote',
+						            onShowPanel:function(){
+						                $(this).combobox('reload')
+						            },
+						            loader: function (param, success, error) {
+						                debugger
+						                param.kw=param.q;
+						                param.ps = param.rows;
+						                param.pn = param.page;
+						                $.ajax({
+						                    url: '/hospital/maintain/projects',
+						                    type: 'get',
+						                    data: param,
+						                    success: function (data) {
+						                        if (data.code != 0) {
+						                            return false;
+						                        } else {
+						                            success(data.data);
+						                        }
+						    
+						                    }
+						                })
+						            },
+						            onChange:function(newValue, oldValue){
+						                rowPad.row.type4ProjectId=newValue
+						            },
+						            loadFilter: function (data) {
+						                debugger
+						                return data.rows;
+						            },
+						            iconWidth:20,
+						            icons:[{
+						                iconCls:'icon-clear',
+						                handler: function(e){
+						                    $(e.data.target).combobox('setValue','');
+						                }
+						            }]
+						            "></td>
+						    </tr>
                 <tr>
                     <td>内容</td>
                     <td><textarea name="content" style="width: 100%;height: 30px;padding:1px 4px"></textarea></td>
