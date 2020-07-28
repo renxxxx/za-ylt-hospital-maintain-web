@@ -25,7 +25,7 @@
     <script src="./libs/viewer-master/dist/viewer.min.js"></script>
     <script src="./libs/common.js"></script>
     <link rel="stylesheet" href="./libs/common.css" />
-    <!-- <script src="./libs/jquery.extend.oneall.js"></script> -->
+    <script src="./libs/jquery.extend.oneall.js"></script>
     <script src="./libs/maintain/common.js"></script>
     <link rel="stylesheet" href="./libs/maintain/common.css" />
 
@@ -189,7 +189,9 @@
             });
         },
         deleteRow: function () {
+            debugger
             var checked = $(rowsPad.selector).find('[name=dg]').datagrid('getChecked');
+            console.log(checked)
             var selected = $(rowsPad.selector).find('[name=dg]').datagrid('getSelected');
             var doctorIds = $(checked).oneall_attrs('doctorId');
             var doctorIdsSplit = doctorIds.join();
@@ -236,6 +238,7 @@
 
         }, deleteRows: function () {
             var doDel = false;
+            debugger
             var rowCount = $(rowsPad.selector).find('[name=dg]').datagrid('getPager').pagination('options').total;
             var n = prompt(`将删除全部 ${rowCount} 条记录，确定吗？`, `请输入删除数量`)
             if (n != null) {

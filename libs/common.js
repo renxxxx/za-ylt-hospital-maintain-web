@@ -4,7 +4,7 @@ hospitalCommon.breakCodeProcess = function (code) {
     debugger
     if (code == 20) {
         if (confirm('现在去登录>>>')) {
-            $(`<a href="/login.html"  >123</a>`)[0].click()
+            $(`<a href="./login.html"  >123</a>`)[0].click()
         }
     }
 
@@ -82,9 +82,10 @@ common.queryStringObject = function(queryString) {
     })
     return result
 }
-common.convertBase64UrlToBlob = function(urlData){
+common.convertBase64UrlToBlob = function(base64,fileName){
     //去掉url的头，并转换为byte
-    var bytes=window.atob(urlData.split(',')[1]);        
+    console.log(base64)
+    var bytes=window.atob(base64.split(',')[1]);        
     
     //处理异常,将ascii码小于0的转换为大于0
     var ab = new ArrayBuffer(bytes.length);
@@ -93,13 +94,13 @@ common.convertBase64UrlToBlob = function(urlData){
         ia[i] = bytes.charCodeAt(i);
     }
     var blod = new Blob( [ab] , {type : 'image/jpeg'});
-    var fileBold = new File([blod],'image/jpeg')
+    var fileBold = new File([blod],fileName)
     // 此处type注意与photoClip初始化中的outputType类型保持一致
     return fileBold
-},
-common.BlockHeadUploadImage = function (inputDom, ook) {
+}
+common.BlockHeadUploadImage = function (base64,fileName,ook) {
     debugger
-    var file = common.convertBase64UrlToBlob(inputDom);
+    var file = common.convertBase64UrlToBlob(base64,fileName);
     var r = prompt('已选的图片大小' + common.prettyFileSize(file.size) + '，如需压缩，请输入质量0-10，取消则直接上传。', '8')
     var compressIs = false
     if (r != null) {

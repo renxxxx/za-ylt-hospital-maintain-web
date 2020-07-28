@@ -19,13 +19,12 @@
     <script src="./libs/carhartl-jquery-cookie-92b7715/jquery.cookie.js"></script>
     <!-- <script src="/hospital/maintain./libs/layer/layer.js"></script> -->
     <script src="./libs/layer/layer.js"></script>
-    <!-- <script src="/hospital/maintain./libs/jquery.extend.oneall.js"></script> -->
 
     <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/default/easyui.css">
     <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/icon.css">
     <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/demo/demo.css">
     <script type="text/javascript" src="./libs/jquery-easyui-1.8.7/jquery.easyui.min.js"></script>
-
+    <script src="./libs/jquery.extend.oneall.js"></script>
     <script src="./libs/common.js"></script>
     <link rel="stylesheet" href="libs/common.css" />
     <script src="index/index.js"></script>
@@ -101,7 +100,7 @@
         }
     });
 
-    hospitalCommon.newTab('概览','overview.html')
+    hospitalCommon.newTab('概览','./overview.html')
 
     
 
@@ -136,7 +135,7 @@
     zNodes.push({ name: '概览', _url: './overview.html' })
     zNodes.push({ name: '病员管理', _url: './patient-manage.html' })
     zNodes.push({ name: '文章管理', _url: './article-manage.html' })
-    zNodes.push({ name: '项目管理', _url: './project-manage.html' })
+    zNodes.push({ name: '案例管理', _url: './project-manage.html' })
     zNodes.push({ name: '活动管理', _url: './activity-manage.html' })
     zNodes.push({ name: '科室管理', _url: './office-manage.html' })
     zNodes.push({ name: '专家管理', _url: './doctor-manage.html' })

@@ -36,6 +36,8 @@
 
     <script src="./libs/maintain/common.js"></script>
     <link rel="stylesheet" href="./libs/maintain/common.css" />
+    <link  href="./libs/cropper/cropper.css" rel="stylesheet">
+    <script src="./libs/cropper/cropper.js"></script>
 </head>
 
 <style>
@@ -45,7 +47,22 @@
         display: none;
     }
 </style>
-
+<style type="text/css">
+    .size{
+            font-size: 12px;
+            position: absolute;
+            z-index: 99;
+            color: #FFF;
+            right: 22px;
+            bottom: -15px;
+            width: auto;
+            height: auto;
+        }
+        p{
+            margin-block-start: 0px;
+            margin-block-end: 0px;
+        }
+</style>
 <script>
 
 
@@ -174,29 +191,88 @@
                 <tr>
                     <td>封面</td>
                     <td>
-                        <div name="coverPad">
+                        <div name="coverPad" class="coverPad">
                             <img style="height:30px;" src="./resource/loadholder.jpg" style="cursor:pointer;" onload='$(this).attr("src",rowPad.row.cover||"").parent().viewer({
                                             url: "src",
                                         });' />
                             <input type="file" style="display:none;" onchange="
-                                        javascript:
-                                        var target = this;
-                                        if(this.files.length>0)
-                                            common.uploadImage(this,function(url){
-                                                $(target).prev().attr('src',url)
-                                                    rowPad.row.cover=url   
-                                            })
-                                    " />
+                            javascript:
+                            var target = this;
+                            console.dir(this.files)
+                            if(this.files.length>0)
+                                saveFn(target.files[0],1)
+                               console.log(target.files[0])
+                               var fd = new FormData()
+                               fd.append('file', this.files[0]);
+                                $.ajax({
+                                    url: '/upload-static-file?',
+                                    type: 'POST',
+                                    data: fd,
+                                    cache: false,
+                                    processData: false,
+                                    contentType: false,
+                                    async: true,
+                                    success: function (res) {
+                                        debugger
+                                        if (res.codeMsg)
+                                            alert(res.codeMsg)
+                                        if (res.code == 0) {
+                                            $('.photoPopup').css('display', 'inline-block')
+                                            $('#images').attr('src' , res.data.url)
+                                            const images = document.getElementById('images');
+                                            debugger
+                                            console.log(target.value)
+                                            target.value=null;
+                                            cropper = new Cropper(images, {
+                                                     //默认裁剪框大小
+                                                viewMode:(1),
+                                                modal : false,
+                                                guides : false, 
+                                                preview:'.views',
+                                                background:false,
+                                                autoCrop:true,
+                                                crop: function (e) {
+                                                    console.log(typeof e.detail.width)
+                                                    $('.cropper-crop-box p').html(String(e.detail.width).substring(0,3)+' × '+String(e.detail.height).substring(0,3))
+                                                },
+                                                cropend:function(e){
+                                                },
+                                                zoom:function(e){
+                                                },
+                                            });
+                                        } else {
+                                            alert('操作失败，请重试')
+                                        }
+                                    }
+                                })
+                        " />
                             <a href="JavaScript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" plain="true"
                                 style="vertical-align: text-bottom;"
                                 onclick="$(this).prev().prev().attr('src','');rowPad.row.cover='';"></a>
 
                             <a href="JavaScript:void(0)" class="easyui-linkbutton" iconCls="icon-choose" plain="true"
                                 style="vertical-align: text-bottom;" onclick="$(this).prev().prev().click()"></a>
+                                <!-- onclick="$(this).prev().prev().click()" -->
                         </div>
                     </td>
                 </tr>
-
+                <div class="photoPopup" style="display: none;position: fixed;background: black;top: 0;left:0;z-index: 999;width: -2;height: 100%;width: 100%;">
+                        <div class="box" style="width: 66%;height: 52%;overflow: hidden;text-align: center;margin: auto;margin-top: 30px;" event.cancelBubble=true>
+                            <img id="images" src="./libs/timg.jpg">
+                        </div>
+                        <div style="color: #FFF;margin: 15px auto;width: 300px;">裁剪预览</div>
+                        <div style="width: 28%;height: 26%!important;overflow: hidden;margin: auto;">
+                                <div class="views" style="width: 300px;height: 200px!important;overflow: hidden;margin: auto;" event.cancelBubble=true>
+                                    </div>
+                        </div>
+                        
+                        <div style="width: 100%; width: 100%;height: 80px;text-align: center;margin-top: 10px;">
+                            <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
+                            font-size: 17px;margin-right: 15px;" onclick="submitFn()" event.cancelBubble=true>确认裁剪</button>
+                            <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
+                            font-size: 17px;" onclick="showcCancelFn()" event.cancelBubble=true>取消裁剪</button>
+                        </div>
+                    </div>
                 <tr>
                     <td>简介</td>
                     <td><input name="intro" class="easyui-textbox" style="width:100%;height:200px;" data-options="
@@ -365,6 +441,42 @@
 </body>
 <script>
     rowPad.afterPage()
+    var _file = '';
+            var _data = undefined
+            function saveFn(e,data){
+                console.log(data)
+                _data = undefined;
+                _data = data
+                _file =''
+                _file = e
+                console.log(e)
+            }
+
+            function showFn(){
+                cropper.crop()
+                
+            }
+            function submitFn(){
+                // console.dir(cropper.getCroppedCanvas().toDataURL('image/jpeg'))
+                if(_file)
+                    common.BlockHeadUploadImage(cropper.getCroppedCanvas().toDataURL('image/jpeg'),_file.name,function(url){
+                        console.log(_data)
+                        $('.coverPad img').attr('src',url)
+                        rowPad.row.cover=url  
+                        $('#images').attr('src' , '')
+                        $('.photoPopup').css('display', 'none')
+                        cropper.destroy()
+                        _file = ''
+                    })
+                console.dir(_file)
+            }
+            function showcCancelFn(){
+                cropper.reset()
+                cropper.clear()
+                $('.photoPopup').css('display', 'none')
+                cropper.destroy()
+                _file = ''
+            }
 </script>
 
 </html>

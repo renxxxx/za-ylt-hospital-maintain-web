@@ -25,7 +25,7 @@
     <script src="./libs/viewer-master/dist/viewer.min.js"></script>
     <script src="./libs/common.js"></script>
     <link rel="stylesheet" href="./libs/common.css" />
-    <!-- <script src="./libs/jquery.extend.oneall.js"></script> -->
+    <script src="./libs/jquery.extend.oneall.js"></script>
 
 
     <script src="./libs/maintain/common.js"></script>
@@ -89,7 +89,7 @@
                             debugger
                             if (value == '汇总：')
                                 return value;
-                            return `<a href="JavaScript:void(0)" style="width:100%;display:inline-block;height:100%;" title="${value||''}" onclick="hospitalCommon.newTab('项目:${common.subOmitRight(row.name, 10)}','/project.html?projectId=${row.projectId}')">${value}</a>`;
+                            return `<a href="JavaScript:void(0)" style="width:100%;display:inline-block;height:100%;" title="${value||''}" onclick="hospitalCommon.newTab('项目:${common.subOmitRight(row.name, 10)}','./project.html?projectId=${row.projectId}')">${value}</a>`;
                         }, styler: function (value, row, index) {
                             return ``
                         }
