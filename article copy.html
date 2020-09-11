@@ -3,8 +3,8 @@
 
 <head>
 
-    <title>忠安医联体医院运维</title>
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <title>医联体医院运维</title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
 
 
     <!-- <script src="./libs/jquery.min.js"></script> -->
@@ -80,7 +80,7 @@
 
             $.ajax({
                 type: 'get',
-                url: `/hospital/maintain/article/${rowPad.param.articleId}`,
+                url: `/ylt/hospital/maintain/article/${rowPad.param.articleId}`,
                 async: false,
                 data: { token: rowPad.param.token },
                 success: function (data) {
@@ -99,8 +99,8 @@
 
             rowPad.contentKindEditor = KindEditor.create('#rowPad [name=content]', {
                 cssPath: './libs/kindeditor/plugins/code/prettify.css',
-                uploadJson: '/kindeditor/upload_json.jsp',
-                fileManagerJson: '/kindeditor/file_manager_json.jsp',
+                uploadJson: '/ylt/kindeditor/upload_json.jsp',
+                fileManagerJson: '/ylt/kindeditor/file_manager_json.jsp',
                 allowFileManager: true,
                 afterCreate: function () {
                     var self = this;
@@ -124,7 +124,7 @@
         rowAlter: function () {
             $.ajax({
                 type: 'post',
-                url: '/hospital/maintain/article-alter',
+                url: '/ylt/hospital/maintain/article-alter',
                 data: Object.assign({ token: rowPad.param.token, articleId: rowPad.param.articleId, content: rowPad.contentKindEditor.html() }, rowPad.row),
                 success: function (data) {
                     if (data.codeMsg)

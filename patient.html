@@ -3,8 +3,8 @@
 
 <head>
 
-    <title>忠安医联体医院运维</title>
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <title>医联体医院运维</title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
 
 
     <!-- <script src="./libs/jquery.min.js"></script> -->
@@ -54,14 +54,14 @@
         selector: "#rowPad",
         param: { token: null, patientId: null },
         row: {
-            hospitalId:logining.hospital.hospitalId
+            hospitalId:logining.hospitalId
         }, contentKindEditor: null,
         beforePage: function () {
             rowPad.param.patientId = queryStringObject.patientId
 
             $.ajax({
                 type: 'get',
-                url: `/hospital/maintain/patient/${rowPad.param.patientId}`,
+                url: `/ylt/hospital/maintain/patient/${rowPad.param.patientId}`,
                 async: false,
                 data: { token: rowPad.param.token },
                 success: function (data) {
@@ -83,7 +83,7 @@
         rowAlter: function () {
             $.ajax({
                 type: 'post',
-                url: '/hospital/maintain/patient-alter',
+                url: '/ylt/hospital/maintain/patient-alter',
                 data: Object.assign({ token: rowPad.param.token, patientId: rowPad.param.patientId},rowPad.row),
                 beforeSend: function () {
                   this.layerIndex = layer.load(0, { shade: [0.1, '#393D49'] });
@@ -254,7 +254,7 @@
                             param.pn = param.page;
                             param.hospitalId =  rowPad.row.hospitalId;
                             $.ajax({
-                                url: '/hospital/maintain/hospital-clinics',
+                                url: '/ylt/hospital/maintain/hospital-clinics',
                                 type: 'get',
                                 data: param,
                                 success: function (data) {

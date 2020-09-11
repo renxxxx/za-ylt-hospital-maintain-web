@@ -4,9 +4,9 @@
 <head lang="en">
 
     <meta charset="UTF-8">
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>忠安医联体医院运维</title>
+    <title>医联体医院运维</title>
 
 
     <!-- <script src="/hospital/maintain./libs/jquery.min.js"></script> -->
@@ -106,7 +106,7 @@
 
     if (token) {
         $.ajax({
-            url: '/hospital/login-refresh',
+            url: '/ylt/hospital/login-refresh',
             type: 'post',
             async: false,
             success: function (data) {
@@ -115,8 +115,8 @@
                 if (data.code == 0) {
                     $.cookie('logining', JSON.stringify(data.data), { expires: 30, path: '/' });
                     account = data.data.account
-                    $('#title').text('忠安医联体-医院平台-'+$(data.data).oneall_nestAttr('hospital.name'))
-                    $('title').text('忠安医联体-医院平台-'+$(data.data).oneall_nestAttr('hospital.name'))
+                    $('#title').text('医联体-医院平台-'+$(data.data).oneall_nestAttr('hospital.name'))
+                    $('title').text('医联体-医院平台-'+$(data.data).oneall_nestAttr('hospital.name'))
                 } else {
                     hospitalCommon.breakCodeProcess(data.code, data.codeMsg)
                 }
@@ -165,7 +165,7 @@
     function logout() {
         $.ajax({
             type:'post',
-            url: '/hospital/logout',
+            url: '/ylt/hospital/logout',
             data: { token: token },
             async: true
         })

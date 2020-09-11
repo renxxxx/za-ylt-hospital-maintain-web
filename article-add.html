@@ -3,8 +3,8 @@
 
 <head>
 
-    <title>忠安医联体医院运维</title>
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <title>医联体医院运维</title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
 
 
     <!-- <script src="./libs/jquery.min.js"></script> -->
@@ -149,7 +149,7 @@
         rowAdd: function () {
             $.ajax({
                 type: 'post',
-                url: '/hospital/maintain/article-add',
+                url: '/ylt/hospital/maintain/article-add',
                 data: Object.assign({ token: rowPad.param.token, content: tinyMCE.editors[0].getContent() }, rowPad.row),
                 success: function (data) {
                     if (data.codeMsg)

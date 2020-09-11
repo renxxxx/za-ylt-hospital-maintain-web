@@ -3,8 +3,8 @@
 
 <head>
 
-    <title>忠安医联体医院运维</title>
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <title>医联体医院运维</title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
 
 
     <!-- <script src="./libs/jquery.min.js"></script> -->
@@ -49,7 +49,7 @@
         selector: "#rowPad",
         param: { token: null },
         row: {
-            hospitalId:logining.hospital.hospitalId
+            hospitalId:logining.hospitalId
         },
         beforePage: function () {
         },
@@ -61,7 +61,7 @@
         rowAdd: function () {
             $.ajax({
                 type: 'post',
-                url: '/hospital/maintain/patient-add',
+                url: '/ylt/hospital/maintain/patient-add',
                 data: Object.assign({ token: rowPad.param.token},rowPad.row),
                 success: function (data) {
                     if (data.codeMsg)
@@ -222,7 +222,7 @@
                             param.pn = param.page;
                             param.hospitalId =  rowPad.row.hospitalId;
                             $.ajax({
-                                url: '/hospital/maintain/hospital-clinics',
+                                url: '/ylt/hospital/maintain/hospital-clinics',
                                 type: 'get',
                                 data: param,
                                 success: function (data) {

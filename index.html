@@ -4,9 +4,9 @@
 <head lang="en">
   
     <meta charset="UTF-8">
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>忠安医联体医院运维</title>
+    <title>医联体医院运维</title>
     <script src="libs/common.js"></script>
     <link rel="stylesheet" href="./libs/common.css" />
     <script src="./index/index.js"></script>
@@ -85,7 +85,7 @@
 <script>
     var token = $.cookie('token'), logining, zNodes;
         $.ajax({
-            url: '/hospital/login-refresh',
+            url: '/ylt/login-refresh',
             type: 'post',
             async: false,
             success: function (data) {
@@ -93,7 +93,7 @@
                     alert(data.codeMsg)
                 if (data.code == 0) {
                     logining = data.data
-                    $.cookie('hospitalLogin', JSON.stringify(logining), { expires: 365, path: '/' });
+                    $.cookie('hospitalLogin', JSON.stringify(logining), { expires: 365, path: '/ylt' });
                 } else {
                     hospitalCommon.breakCodeProcess(data.code, data.codeMsg)
                 }
@@ -101,7 +101,7 @@
         })
 
     $('.account').text(logining.account)
-    $('.hospitalName').text(logining.hospital.name)
+    $('.hospitalName').text(logining.hospitalName)
     
 
     zNodes = []
@@ -142,7 +142,7 @@
     function logout() {
         $.ajax({
             type: 'post',
-            url: '/hospital/logout',
+            url: '/ylt/logout',
             data: { token: token },
             async: true,
             success: function (data) {

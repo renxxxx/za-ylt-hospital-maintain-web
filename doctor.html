@@ -3,7 +3,7 @@
 
 <head>
 
-    <title>忠安医联体医院运维</title>
+    <title>医联体医院运维</title>
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
 
 
@@ -71,14 +71,14 @@ var loginingStr = $.cookie('hospitalLogin');
         selector: "#rowPad",
         param: { token: null, doctorId: null },
         row: {
-            hospitalId:logining.hospital.hospitalId
+            hospitalId:logining.hospitalId
         }, contentKindEditor: null,
         beforePage: function () {
             rowPad.param.doctorId = queryStringObject.doctorId
 
             $.ajax({
                 type: 'get',
-                url: `/hospital/maintain/doctor/${rowPad.param.doctorId}`,
+                url: `/ylt/hospital/maintain/doctor/${rowPad.param.doctorId}`,
                 async: false,
                 data: { token: rowPad.param.token },
                 success: function (data) {
@@ -100,7 +100,7 @@ var loginingStr = $.cookie('hospitalLogin');
         rowAlter: function () {
             $.ajax({
                 type: 'post',
-                url: '/hospital/maintain/doctor-alter',
+                url: '/ylt/hospital/maintain/doctor-alter',
                 data: Object.assign({ token: rowPad.param.token, doctorId: rowPad.param.doctorId }, rowPad.row),
                 success: function (data) {
                     if (data.codeMsg)
@@ -184,7 +184,7 @@ var loginingStr = $.cookie('hospitalLogin');
                             param.pn = param.page;
                             param.hospitalId = rowPad.row.hospitalId;
                             $.ajax({
-                                url: '/hospital/maintain/offices',
+                                url: '/ylt/hospital/maintain/offices',
                                 type: 'get',
                                 data: param,
                                 success: function (data) {

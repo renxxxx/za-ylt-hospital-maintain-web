@@ -3,9 +3,9 @@
 
 <head>
 
-    <title>忠安医联体医院运维</title>
+    <title>医联体医院运维</title>
     <meta charset="UTF-8">
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
 
 
     <!-- <script src="./libs/jquery.min.js"></script> -->
@@ -133,7 +133,7 @@
                     param.pn = param.page;
                     Object.assign(param, rowsPad.queryParam);
                     $.ajax({
-                        url: '/hospital/maintain/offices',
+                        url: '/ylt/hospital/maintain/offices',
                         type: 'get',
                         data: param,
                         success: function (data) {
@@ -216,7 +216,7 @@
             if (doDel) {
                 $.ajax({
                     type: 'post',
-                    url: `/hospital/maintain/office-delete`,
+                    url: `/ylt/hospital/maintain/office-delete`,
                     data: { token: rowsPad.param.token, officeId: officeIdsSplit },
                     success: function (data) {
                         if (data.codeMsg)
@@ -264,7 +264,7 @@
             if (doDel) {
                 $.ajax({
                     type: 'post',
-                    url: `/hospital/maintain/offices-delete`,
+                    url: `/ylt/hospital/maintain/offices-delete`,
                     data: Object.assign({ token: rowsPad.param.token,password:password },rowsPad.queryParam),
                     success: function (data) {
                         if (data.codeMsg)
