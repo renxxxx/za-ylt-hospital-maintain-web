@@ -95,33 +95,32 @@
             $(rowPad.selector).find('[name=dg]').datagrid()
 
             rowPad.contentEditor = tinymce.init({
-    selector: '[name=content]',
+    selector: '#content',
     height:'500px',
-    mode : "textareas",
     plugins : 'advlist autolink link image lists charmap print preview media paste save imagetools template pagebreak hr autosave fullpage fullscreen table textcolor textpattern wordcount insertdatetime legacyoutput pageembed code bdmap',
     automatic_uploads: false,
+    relative_urls : false,
     forced_root_block: 'div',
     force_p_newlines: false,
     images_upload_url: 'postAcceptor.php',
     language: "zh_CN",
-    init_instance_callback : function(editor) {
-        debugger;
-        
+    init_instance_callback : function(editor) {        
         if(rowPad.row.contentBtId)
-            $.get('/bigtxt/'+rowPad.row.contentBtId+'/'+rowPad.row.contentBtId+'?rand='+Math.random(),function(res){
+            $.get(rowPad.row.contentBtId+'?rand='+Math.random(),function(res){
                 editor.setContent(res)
             })
     },
     file_picker_callback:function(callback,value,meta){
-        debugger
-        $(`<input type='file'>`).change(function(){
+        console.log('file_picker_callback')
+        $(`<input type='file' style='display:none;'/>`).appendTo('body').change(function(){
+            console.log('input file change')
             var target = this;
                                 if(this.files.length>0){
                                     var file = this.files[0];
                                     var fd = new FormData()
                                     fd.append('file', file);
                                     $.ajax({
-                                        url: '/upload-static-file?',
+                                        url: '/ylt/upload-file?',
                                         type: 'POST',
                                         data: fd,
                                         cache: false,
@@ -129,6 +128,7 @@
                                         contentType: false,
                                         async: true,
                                         success: function (res) {
+                                            console.log('ajax success')
                                             if (res.codeMsg)
                                                 $.messager.alert('提示',res.codeMsg)
                                             if (res.code == 0) {
@@ -171,10 +171,27 @@
 
         },
         rowAlter: function () {
+            if(tinyMCE.editors[0].contentSrc!=tinyMCE.editors[0].getContent())
+                $.ajax({
+                    type: 'post',
+                    contentType:"text/plain",
+                    url: '/ylt/upload-stream?ext=html',
+                    async:false,
+                    data: tinyMCE.editors[0].getContent() ,
+                    success: function (res) {
+                        debugger
+                        if (res.codeMsg)
+                            $.messager.alert('提示',res.codeMsg)
+                        if (res.code == 0) {
+                            rowPad.row.contentBtId=res.data.url
+                        } 
+                    }
+                })
+
             $.ajax({
                 type: 'post',
                 url: '/ylt/hospital/maintain/article-alter',
-                data: Object.assign({ token: rowPad.param.token, articleId: rowPad.param.articleId, content: tinyMCE.editors[0].getContent()}, rowPad.row),
+                data: Object.assign({ token: rowPad.param.token, articleId: rowPad.param.articleId}, rowPad.row),
                 success: function (data) {
                     if (data.codeMsg)
                         alert(data.codeMsg)
@@ -254,7 +271,7 @@
                                var fd = new FormData()
                                fd.append('file', this.files[0]);
                                 $.ajax({
-                                    url: '/upload-static-file?',
+                                    url: '/ylt/upload-file?',
                                     type: 'POST',
                                     data: fd,
                                     cache: false,
@@ -333,7 +350,7 @@
                 </tr>
                 <tr>
                     <td>内容</td>
-                    <td><textarea name="content" style="width: 100%;height: 30px;padding:1px 4px"></textarea></td>
+                    <td><textarea id="content" style="width: 100%;height: 30px;padding:1px 4px"></textarea></td>
                 </tr>
                 <tr>
                     <td>浏览量</td>

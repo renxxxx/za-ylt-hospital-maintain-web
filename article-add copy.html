@@ -94,9 +94,25 @@
         },
         rowAdd: function () {
             $.ajax({
+                    type: 'post',
+                    contentType:"text/plain",
+                    url: '/ylt/upload-stream?ext=html',
+                    async:false,
+                    data: rowPad.contentKindEditor.html() ,
+                    success: function (res) {
+                        debugger
+                        if (res.codeMsg)
+                            alert(data.codeMsg)
+                        if (res.code == 0) {
+                            rowPad.row.contentBtId=res.data.url
+                        } 
+                    }
+                })
+
+            $.ajax({
                 type: 'post',
                 url: '/ylt/hospital/maintain/article-add',
-                data: Object.assign({ token: rowPad.param.token, content: rowPad.contentKindEditor.html() }, rowPad.row),
+                data: Object.assign({ token: rowPad.param.token }, rowPad.row),
                 success: function (data) {
                     if (data.codeMsg)
                         alert(data.codeMsg)
@@ -175,7 +191,7 @@
                                var fd = new FormData()
                                fd.append('file', this.files[0]);
                                 $.ajax({
-                                    url: '/upload-static-file?',
+                                    url: '/ylt/upload-file?',
                                     type: 'POST',
                                     data: fd,
                                     cache: false,

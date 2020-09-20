@@ -174,7 +174,7 @@
 
                     debugger
                     if (rowPad.row.contentBtId)
-                        $.get(`/bigtxt/${rowPad.row.contentBtId}/${rowPad.row.contentBtId}?rand=${Math.random()}`, function (data) {
+                        $.get(`${rowPad.row.contentBtId}?rand=${Math.random()}`, function (data) {
                             
                             self.html(data)
                         })
@@ -282,7 +282,7 @@
                                    var fd = new FormData()
                                    fd.append('file', this.files[0]);
                                     $.ajax({
-                                        url: '/upload-static-file?',
+                                        url: '/ylt/upload-file?',
                                         type: 'POST',
                                         data: fd,
                                         cache: false,
@@ -368,7 +368,7 @@
                                    var fd = new FormData()
                                    fd.append('file', this.files[0]);
                                     $.ajax({
-                                        url: '/upload-static-file?',
+                                        url: '/ylt/upload-file?',
                                         type: 'POST',
                                         data: fd,
                                         cache: false,

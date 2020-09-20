@@ -117,7 +117,7 @@ common.BlockHeadUploadImage = function (base64,fileName,ook) {
     debugger
     fd.append('file', file);
     $.ajax({
-        url: '/upload-static-file?' + $.param({ quality: r/10 }),
+        url: '/ylt/upload-file?' + $.param({ quality: r/10 }),
         type: 'POST',
         data: fd,
         cache: false,
@@ -154,7 +154,7 @@ common.uploadImage = function (inputDom, ook) {
     var fd = new FormData()
     fd.append('file', file);
     $.ajax({
-        url: '/upload-static-file?' + $.param({ quality: r/10 }),
+        url: '/ylt/upload-file?' + $.param({ quality: r/10 }),
         type: 'POST',
         data: fd,
         cache: false,
