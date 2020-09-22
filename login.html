@@ -87,7 +87,7 @@
             async: false,
             success: function (data) {
                 if (data.code == 0) {
-                    $.cookie('hospitalLogin', JSON.stringify(data.data), { expires: 365, path: '/ylt' });
+                    // $.cookie('hospitalLogin', JSON.stringify(data.data), { expires: 365, path: '/ylt' });
                     location.href = './index.html';
                 }
             }
@@ -115,7 +115,7 @@
                             if (data.codeMsg)
                                 alert(data.codeMsg)
                             if (data.code == 0) {
-                                $.cookie('hospitalLogin', JSON.stringify(data.data), { expires: 365, path: '/' });
+                                // $.cookie('hospitalLogin', JSON.stringify(data.data), { expires: 365, path: '/' });
                                 location.href = './index.html';
                             }
                             else {

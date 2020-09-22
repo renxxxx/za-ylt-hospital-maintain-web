@@ -113,7 +113,7 @@
                 if(data.codeMsg)
                     alert(data.codeMsg)
                 if (data.code == 0) {
-                    $.cookie('logining', JSON.stringify(data.data), { expires: 30, path: '/' });
+                    // $.cookie('logining', JSON.stringify(data.data), { expires: 30, path: '/' });
                     account = data.data.account
                     $('#title').text('医联体-医院平台-'+$(data.data).oneall_nestAttr('hospital.name'))
                     $('title').text('医联体-医院平台-'+$(data.data).oneall_nestAttr('hospital.name'))

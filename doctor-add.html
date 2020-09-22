@@ -57,10 +57,21 @@
 
 </style>
 <script>
-
-    var loginingStr = $.cookie('hospitalLogin');
-    var logining = loginingStr?JSON.parse($.cookie('hospitalLogin')):loginingStr;
-    
+    var logining = '';
+    $.ajax({
+        url: '/ylt/login-refresh',
+        type: 'post',
+        async: false,
+        success: function (data) {
+            if(data.codeMsg)
+                alert(data.codeMsg)
+            if (data.code == 0) {
+                logining = data.data
+            } else {
+                hospitalCommon.breakCodeProcess(data.code, data.codeMsg)
+            }
+        }
+    })
     var queryStringObject = common.queryStringObject();
 
     var rowPad = {
@@ -93,6 +104,8 @@
                 }
             })
         }
+        
+        
     }
 
     rowPad.beforePage();

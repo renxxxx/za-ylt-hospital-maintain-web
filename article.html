@@ -25,7 +25,7 @@
     <script src="./libs/common.js"></script>
     <link rel="stylesheet" href="./libs/common.css" />
     <script src="./libs/jquery.extend.oneall.js"></script>
-    <script charset="utf-8" src="./tinymce/tinymce.min.js"></script>
+    <script charset="utf-8" src="./libs/tinymce/tinymce.min.js"></script>
 
 
     <!-- <script src="/hospital/maintain./libs/common.js"></script> -->
@@ -95,21 +95,21 @@
             $(rowPad.selector).find('[name=dg]').datagrid()
 
             rowPad.contentEditor = tinymce.init({
-    selector: '#content',
-    height:'500px',
-    plugins : 'advlist autolink link image lists charmap print preview media paste save imagetools template pagebreak hr autosave fullpage fullscreen table textcolor textpattern wordcount insertdatetime legacyoutput pageembed code bdmap',
-    automatic_uploads: false,
-    relative_urls : false,
-    forced_root_block: 'div',
-    force_p_newlines: false,
-    images_upload_url: 'postAcceptor.php',
-    language: "zh_CN",
-    init_instance_callback : function(editor) {        
-        if(rowPad.row.contentBtId)
-            $.get(rowPad.row.contentBtId+'?rand='+Math.random(),function(res){
-                editor.setContent(res)
-            })
-    },
+            selector: '#content',
+            height:'500px',
+            plugins : 'advlist autolink link image lists charmap print preview media paste save imagetools template pagebreak hr autosave fullpage fullscreen table textcolor textpattern wordcount insertdatetime legacyoutput pageembed code bdmap',
+            automatic_uploads: false,
+            relative_urls : false,
+            forced_root_block: 'div',
+            force_p_newlines: false,
+            images_upload_url: 'postAcceptor.php',
+            language: "zh_CN",
+        init_instance_callback : function(editor) {        
+            if(rowPad.row.contentBtId)
+                $.get(rowPad.row.contentBtId+'?rand='+Math.random(),function(res){
+                    editor.setContent(res)
+                })
+            },
     file_picker_callback:function(callback,value,meta){
         console.log('file_picker_callback')
         $(`<input type='file' style='display:none;'/>`).appendTo('body').change(function(){

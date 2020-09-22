@@ -93,7 +93,7 @@
                     alert(data.codeMsg)
                 if (data.code == 0) {
                     logining = data.data
-                    $.cookie('hospitalLogin', JSON.stringify(logining), { expires: 365, path: '/ylt' });
+                    // $.cookie('hospitalLogin', JSON.stringify(logining), { expires: 365, path: '/ylt' });
                 } else {
                     hospitalCommon.breakCodeProcess(data.code, data.codeMsg)
                 }
