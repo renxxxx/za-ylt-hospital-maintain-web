@@ -88,7 +88,9 @@
             success: function (data) {
                 if (data.code == 0) {
                     // $.cookie('hospitalLogin', JSON.stringify(data.data), { expires: 365, path: '/ylt' });
-                    location.href = './index.html';
+                    if(data.data.hospitalAdminIs){
+                        location.href = './index.html';
+                    }
                 }
             }
         })
@@ -106,7 +108,6 @@
                 if (data.codeMsg)
                     alert(data.codeMsg)
                 if (data.code == 0) {
-                    $('#message').fadeIn(100).fadeOut(1500).find('[name=content]').text('成功');
                     $.ajax({
                         url: '/ylt/login-refresh',
                         type: 'post',
@@ -116,7 +117,12 @@
                                 alert(data.codeMsg)
                             if (data.code == 0) {
                                 // $.cookie('hospitalLogin', JSON.stringify(data.data), { expires: 365, path: '/' });
-                                location.href = './index.html';
+                                if(data.data.hospitalAdminIs){
+                                    $('#message').fadeIn(100).fadeOut(1500).find('[name=content]').text('成功');
+                                    location.href = './index.html';
+                                }else{
+                                    alert('账号类型错误')
+                                }
                             }
                             else {
                                 hospitalCommon.breakCodeProcess(data.code, data.codeMsg)
