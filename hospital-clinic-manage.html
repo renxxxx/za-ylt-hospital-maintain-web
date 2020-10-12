@@ -336,47 +336,7 @@
             }" style="width:200px" /></span>
 
             <span style='display:inline-block;margin-top:5px;margin-left:5px;'>
-                    <span style="">类型:</span>
-        <input name="type" class="easyui-combobox" 
-        data-options="editable:false,panelHeight:'auto',value:'',data:[{
-			text: '无',
-			value: '0'
-		},{
-			text: '网页',
-			value: '1'
-		},{
-			text: '文章',
-			value: '2'
-		},{
-			text: '专家',
-			value: '3'
-		},{
-			text: '案例',
-			value: '4'
-		},{
-			text: '活动',
-			value: '5'
-		},{
-			text: '医院主页',
-			value: '6'
-		},{
-			text: '专家列表',
-			value: '7'
-		},{
-			text: '科室列表',
-			value: '8'
-		}],
-                     iconWidth:20,
-                     icons:[{
-                         iconCls:'icon-clear',
-                         handler: function(e){
-                             $(e.data.target).combobox('setValue','');
-                         }
-                     }],
-                     onChange:function(newValue, oldValue){
-                        rowsPad.data.queryParam.type=newValue
-                     }" />
-</span>
+           
 
 
                 <span style='display:inline-block;margin-top:5px;margin-left:5px;'>
@@ -393,43 +353,6 @@
                 rowsPad.data.queryParam.addTimeFrom=newValue
             }">
                 </span>
-
-                <span style='display:inline-block;margin-top:5px;margin-left:5px;'>
-                    <span style="">To:</span>
-                    <input name="addTimeTo" class="easyui-datebox" style="width:135px" data-options="
-                editable:false,
-                icons:[{
-                    iconCls:'icon-clear',
-                    handler: function(e){
-                        $(e.data.target).datebox('setValue','');
-                    }
-                }],
-        onChange:function(newValue, oldValue){
-            rowsPad.data.queryParam.addTimeTo=newValue
-        }"></span>
-
-                <span style='display:inline-block;margin-top:5px;margin-left:5px;'>
-                    <span style="">&nbsp;冻结:</span>
-                    <input name="frozen" class="easyui-combobox" style="width:80px" data-options="editable:false,panelHeight:'auto',value:'',data:[
-           {
-                                         text: '否',
-                                         value: '0'
-                                     },{
-                                         text: '是',
-                                         value: '1'
-                                     }],
-            iconWidth:20,
-            icons:[{
-                iconCls:'icon-clear',
-                handler: function(e){
-                    $(e.data.target).combobox('setValue','');
-                }
-            }],
-            onChange:function(newValue, oldValue){
-                rowsPad.data.queryParam.frozen=newValue
-            }" />
-                </span>
-
                 <!-- <span style='display:inline-block;margin-top:5px;margin-left:5px;'>
                     <span style="">删除:</span>
                     <input name="del" class="easyui-combobox" style="width:80px" data-options="editable:false,panelHeight:'auto',value:0,data:[
