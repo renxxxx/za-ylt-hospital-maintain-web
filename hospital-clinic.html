@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>医联体运维-查看广告</title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+    <!-- <script src="./libs/jquery.min.js"></script> -->
+    <!-- <script src="./libs/jquery.cookie.js"></script> -->
+    <script src="./libs/jquery-easyui-1.8.7/jquery.min.js"></script>
+    <script src="./libs/carhartl-jquery-cookie-92b7715/jquery.cookie.js"></script>
+    <script src="./libs/layer/layer.js"></script>
+    <script src="./libs/moment.js"></script>
+    <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="./libs/jquery-easyui-1.8.7/themes/icon.css">
+    <script type="text/javascript" src="./libs/jquery-easyui-1.8.7/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="./libs/jquery-easyui-1.8.7/locale/easyui-lang-zh_CN.js"></script>
+    <!-- <link rel="stylesheet" href="./libs/jQueryViewer20160329/css/viewer.min.css"> -->
+    <!-- <script src="./libs/jQueryViewer20160329/js/viewer.min.js"></script> -->
+    <!-- <script src="./libs/jQueryViewer20160329/js/viewer-jquery.min.js"></script> -->
+    <link rel="stylesheet" href="./libs/viewer-master/dist/viewer.min.css">
+    <script src="./libs/viewer-master/dist/viewer.min.js"></script>
+    <script src="./libs/common.js"></script>
+    <link rel="stylesheet" href="./libs/common.css" />
+    <link rel="stylesheet" href="./libs/kindeditor/themes/default/default.css" />
+    <link rel="stylesheet" href="./libs/kindeditor/plugins/code/prettify.css" />
+    <script charset="utf-8" src="./libs/kindeditor/kindeditor-all.js"></script>
+    <script charset="utf-8" src="./libs/kindeditor/lang/zh-CN.js"></script>
+    <script charset="utf-8" src="./libs/kindeditor/plugins/code/prettify.js"></script>
+    <script src="./libs/maintain/common.js"></script>
+    <link rel="stylesheet" href="./libs/maintain/common.css" />
+    <link  href="./libs/cropper/cropper.css" rel="stylesheet">
+    <script src="./libs/cropper/cropper.js"></script>
+    <script src="./libs/jquery.extend.oneall.js"></script>
+    <script charset="utf-8" src="./libs/tinymce/tinymce.min.js"></script>
+
+</head>
+
+<style>
+    #rowPad .show {}
+
+    #rowPad .edit {
+        display: none;
+    }
+</style>
+<style type="text/css">
+    .size{
+            font-size: 12px;
+            position: absolute;
+            z-index: 99;
+            color: #FFF;
+            right: 22px;
+            bottom: -15px;
+            width: auto;
+            height: auto;
+        }
+        p{
+            margin-block-start: 0px;
+            margin-block-end: 0px;
+        }
+    </style>
+<script>
+    
+
+
+    var queryStringObject = common.queryStringObject();
+    var rowPad = {
+        selector: "#rowPad",
+        param: { token: null, hospitalClinicId: null },
+        row: {
+
+        }, contentKindEditor: null,
+        beforePage: function () {
+            rowPad.param.hospitalClinicId = queryStringObject.hospitalClinicId
+
+            $.ajax({
+                type: 'get',
+                url: `/ylt/hospital/super-admin/hospital-clinic/${rowPad.param.hospitalClinicId}`,
+                async: false,
+                data: { token: rowPad.param.token },
+                success: function (data) {
+                    if (data.codeMsg)
+                        alert(data.codeMsg)
+                    if (data.code == 0) {
+                        rowPad.row = data.data;
+                    } else {
+                        hospitalCommon.breakCodeProcess(data.code, data.codeMsg)
+                    }
+                }
+            })
+        },
+        afterPage: function () {
+            $(rowPad.selector).find('[name=dg]').datagrid()
+
+            rowPad.contentEditor = tinymce.init({
+            selector: '#content',
+            height:'500px',
+            plugins : 'advlist autolink link image lists charmap print preview media paste save imagetools template pagebreak hr autosave fullpage fullscreen table textcolor textpattern wordcount insertdatetime legacyoutput pageembed code bdmap',
+            automatic_uploads: false,
+            relative_urls : false,
+            forced_root_block: 'div',
+            force_p_newlines: false,
+            images_upload_url: 'postAcceptor.php',
+            language: "zh_CN",
+        init_instance_callback : function(editor) {        
+            if(rowPad.row.contentBtId)
+                $.get(rowPad.row.contentBtId+'?rand='+Math.random(),function(res){
+                    editor.setContent(res)
+                })
+            },
+    file_picker_callback:function(callback,value,meta){
+        console.log('file_picker_callback')
+        $(`<input type='file' style='display:none;'/>`).appendTo('body').change(function(){
+            console.log('input file change')
+            var target = this;
+                                if(this.files.length>0){
+                                    var file = this.files[0];
+                                    var fd = new FormData()
+                                    fd.append('file', file);
+                                    $.ajax({
+                                        url: '/ylt/upload-file?',
+                                        type: 'POST',
+                                        data: fd,
+                                        cache: false,
+                                        processData: false,
+                                        contentType: false,
+                                        async: true,
+                                        success: function (res) {
+                                            console.log('ajax success')
+                                            if (res.codeMsg)
+                                                $.messager.alert('提示',res.codeMsg)
+                                            if (res.code == 0) {
+                                                callback(res.data.url)
+                                                target.value=null
+                                                $(target).remove()
+                                            }
+                                        }
+                                    })
+                                }
+        }).click()
+       
+    },
+    images_upload_handler: function (blobInfo, success, failure) {
+        debugger
+        var xhr, formData;
+
+        xhr = new XMLHttpRequest();
+        xhr.withCredentials = false;
+        xhr.open('POST', 'postAcceptor.php');
+
+        xhr.onload = function() {
+            var json;
+            if (xhr.status != 200) {
+                failure('HTTP Error: ' + xhr.status);
+                return;
+            }
+            json = JSON.parse(xhr.responseText);
+            if (!json || typeof json.location != 'string') {
+                failure('Invalid JSON: ' + xhr.responseText);
+                return;
+            }
+            success(json.location);
+        };
+        formData = new FormData();
+        formData.append('file', blobInfo.blob(), blobInfo.filename());
+        xhr.send(formData);
+    }
+  });
+
+        },
+        rowAlter: function () {
+            debugger
+            $.ajax({
+                type: 'post',
+                url: '/ylt/hospital/super-admin/hospital-clinic-alter',
+                data: Object.assign({  hospitalClinicId: rowPad.param.hospitalClinicId},rowPad.row),
+                success: function (data) {
+                    if (data.codeMsg)
+                        alert(data.codeMsg)
+                    if (data.code == 0) {
+                        if (!data.codeMsg)
+                            alert('操作成功')
+                        location.reload()
+                    } else {
+                        hospitalCommon.breakCodeProcess(data.code, data.codeMsg)
+                    }
+                }
+            })
+        },
+        modifyPasswordFn: function (){
+            debugger
+            if($('#passwordId').val() != $('#passwordConfirmId').val()){
+                layer.alert('两次密码不一致')
+                $('.passwordAlert').css('display', 'none');
+                $('.passwordAlert').val('');
+                $('.passwordConfirmId').val('')
+                return;
+            }
+            let _data = {
+                hospitalClinicId:rowPad.param.hospitalClinicId,
+                password:$('#passwordId').val()
+            }
+            layer.confirm('确认修改吗?',function(){
+                $.ajax({
+                    type: 'post',
+                    url: '/ylt/hospital/super-admin/hospital-clinic-alter',
+                    data: _data,
+                    beforeSend:function(){
+                        this.layerIndex=layer.load(2)
+                    },
+                    success: function (res) {
+                        debugger
+                        if (res.codeMsg)
+                            layer.alert(res.codeMsg)
+                        if (res.code == 0) {
+                            if (!res.codeMsg)
+                                layer.alert('操作成功',function(){
+                                    location.reload()
+                                })
+                        } 
+                    },
+                                complete:function(){
+                                    layer.close(this.layerIndex)
+                                }
+                })
+            })
+            
+        }
+    }
+
+    rowPad.beforePage()
+    var loadingPad = {
+        param:{},
+        remove: function () {
+            $("#loadingPad").remove();
+        }
+    }
+
+    $.parser.onComplete = function () {
+        loadingPad.remove()
+    }
+
+</script>
+
+<body style="margin:0;padding:0;">
+    <div id='loadingPad' style="position: absolute; z-index: 1000; top: 0px; left: 0px; 
+        width: 100%; height: 100%; background: white; text-align: center;padding:5px 10px">
+        <font>loading···</font>
+    </div>
+
+    <div id="rowPad">
+        <table name="dg" data-options="singleSelect:true,height:'700px'">
+            <thead>
+                <tr>
+                    <th data-options="field:'name',width:200">属性</th>
+                    <th data-options="field:'value',width:500">值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>门诊名称</td>
+                    <td><input name="name" class="easyui-textbox" style="width:100%" data-options="
+                        value:rowPad.row.name,
+                        iconWidth:20,
+                        icons:[{
+                            iconCls:'icon-clear',
+                            handler: function(e){
+                                $(e.data.target).textbox('setValue','');
+                            }
+                        }],
+                        onChange:function(newValue, oldValue){
+                            rowPad.row.name=newValue
+                        }" style="width:200px"></td>
+                </tr>
+                <!-- <tr>
+                    <td>推广人</td>
+                    <td><input name="hospitalUserName" class="easyui-textbox" style="width:100%" data-options="
+                        value:rowPad.row.hospitalUserName,
+                        iconWidth:20,
+                        icons:[{
+                            iconCls:'icon-clear',
+                            handler: function(e){
+                                $(e.data.target).textbox('setValue','');
+                            }
+                        }],
+                        onChange:function(newValue, oldValue){
+                            rowPad.row.hospitalUserName=newValue
+                        }" style="width:200px"></td>
+                </tr> -->
+                <tr>
+                    <td>推广人</td>
+                    <td><input class="easyui-combobox" name="hospitalId" style="width:100%;" data-options="
+                        value:rowPad.row.hospitalUserId,
+                        text:rowPad.row.name,
+                        valueField:'hospitalUserId',
+                        textField:'name',
+                        panelHeight:'auto',
+                        mode:'remote',
+                        onShowPanel:function(){
+                            $(this).combobox('reload')
+                        },
+                        loader: function (param, success, error) {
+                            debugger
+                            param.kw=param.q;
+                            param.ps = param.rows;
+                            param.pn = param.page;
+                            $.ajax({
+                                url: '/ylt/hospital/def/hospital-operator-users',
+                                type: 'get',
+                                data: param,
+                                success: function (data) {
+                                    if (data.code != 0) {
+                                        return false;
+                                    } else {
+                                        success(data.data);
+                                    }
+                
+                                }
+                            })
+                        },
+                        onChange:function(newValue, oldValue){
+                            rowPad.row.hospitalUserId=newValue
+                        },
+                        loadFilter: function (data) {
+                            debugger
+                            return data.rows;
+                        },
+                        iconWidth:20,
+                        icons:[{
+                            iconCls:'icon-clear',
+                            handler: function(e){
+                                $(e.data.target).combobox('setValue','');
+                            }
+                        }]
+                        "></td>
+                </tr>
+                <tr>
+                    <td>分配账号</td>
+                    <td><input name="clinicUserPhone" class="easyui-textbox" style="width:100%" data-options="
+                        value:rowPad.row.clinicUserPhone,
+                        iconWidth:20,
+                        icons:[{
+                            iconCls:'icon-clear',
+                            handler: function(e){
+                                $(e.data.target).textbox('setValue','');
+                            }
+                        }],
+                        onChange:function(newValue, oldValue){
+                            rowPad.row.clinicUserPhone=newValue
+                        }" style="width:200px"></td>
+                </tr>
+                <tr>
+                    <td>负责人</td>
+                    <td><input name="headman" class="easyui-textbox" style="width:100%" data-options="
+                        value:rowPad.row.headman,
+                        iconWidth:20,
+                        icons:[{
+                            iconCls:'icon-clear',
+                            handler: function(e){
+                                $(e.data.target).textbox('setValue','');
+                            }
+                        }],
+                        onChange:function(newValue, oldValue){
+                            rowPad.row.headman=newValue
+                        }" style="width:200px"></td>
+                </tr>
+                
+                <tr>
+                        <td>营业执照</td>
+                        <td>
+                            <div name="license" class="coverPad">
+                                <img style="height:30px;"  src="./resource/loadholder.jpg" style="cursor:pointer;" onload='$(this).attr("src",rowPad.row.license||"").parent().viewer({
+                                    url: "src",
+                                });'/>
+                                <input type="file" style="display:none;" onchange="
+                                javascript:
+                                var target = this;
+                                console.dir(this.files)
+                                if(this.files.length>0)
+                                    saveFn(target.files[0],1)
+                                   console.log(target.files[0])
+                                   var fd = new FormData()
+                                   fd.append('file', this.files[0]);
+                                    $.ajax({
+                                        url: '/ylt/upload-file?',
+                                        type: 'POST',
+                                        data: fd,
+                                        cache: false,
+                                        processData: false,
+                                        contentType: false,
+                                        async: true,
+                                        success: function (res) {
+                                            debugger
+                                            if (res.codeMsg)
+                                                alert(res.codeMsg)
+                                            if (res.code == 0) {
+                                                $('.photoPopup').css('display', 'inline-block')
+                                                $('#images').attr('src' , res.data.url)
+                                                const images = document.getElementById('images');
+                                                debugger
+                                                console.log(target.value)
+                                                target.value=null;
+                                                cropper = new Cropper(images, {
+                                                         //默认裁剪框大小
+                                                    viewMode:(1),
+                                                    modal : false,
+                                                    guides : false, 
+                                                    preview:'.views',
+                                                    background:false,
+                                                    autoCrop:true,
+                                                    crop: function (e) {
+                                                        console.log(typeof e.detail.width)
+                                                        $('.cropper-crop-box p').html(String(e.detail.width).substring(0,3)+' × '+String(e.detail.height).substring(0,3))
+                                                    },
+                                                    cropend:function(e){
+                                                    },
+                                                    zoom:function(e){
+                                                    },
+                                                });
+                                            } else {
+                                                alert('操作失败，请重试')
+                                            }
+                                        }
+                                    })
+                            " />
+                                <a href="JavaScript:void(0)" class="easyui-linkbutton" iconCls="icon-clear" plain="true"
+                                    style="vertical-align: text-bottom;"
+                                    onclick="$(this).prev().prev().attr('src','');rowPad.row.license='';"></a>
+    
+                                <a href="JavaScript:void(0)" class="easyui-linkbutton" iconCls="icon-choose" plain="true"
+                                    style="vertical-align: text-bottom;" onclick="$(this).prev().prev().click()"></a>
+                                    <!-- onclick="$(this).prev().prev().click()" -->
+                            </div>
+                        </td>
+                    </tr>
+                <div class="photoPopup" style="display: none;position: fixed;background: black;top: 0;left:0;z-index: 999;width: -2;height: 100%;width: 100%;">
+                    <div class="box" style="width: 66%;height: 52%;overflow: hidden;text-align: center;margin: auto;margin-top: 30px;" event.cancelBubble=true>
+                        <img id="images" src="./libs/timg.jpg">
+                    </div>
+                    <div style="color: #FFF;margin: 15px auto;width: 300px;">裁剪预览</div>
+                    <div style="width: 28%;height: 26%!important;overflow: hidden;margin: auto;">
+                            <div class="views" style="width: 300px;height: 200px!important;overflow: hidden;margin: auto;" event.cancelBubble=true>
+                                </div>
+                    </div>
+                    
+                    <div style="width: 100%; width: 100%;height: 80px;text-align: center;margin-top: 10px;">
+                        <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
+                        font-size: 17px;margin-right: 15px;" onclick="submitFn()" event.cancelBubble=true>确认裁剪</button>
+                        <button style="width: 110px;height: 40px;border-radius: 6px;border: none;cursor: pointer;
+                        font-size: 17px;" onclick="showcCancelFn()" event.cancelBubble=true>取消裁剪</button>
+                    </div>
+                </div>
+                <tr>
+                    <td>地址</td>
+                    <td><input name="address" class="easyui-textbox" style="width:100%" data-options="
+                        value:rowPad.row.address,
+                        iconWidth:20,
+                        icons:[{
+                            iconCls:'icon-clear',
+                            handler: function(e){
+                                $(e.data.target).textbox('setValue','');
+                            }
+                        }],
+                        onChange:function(newValue, oldValue){
+                            rowPad.row.address=newValue
+                        }" style="width:200px"></td>
+                </tr>
+                <tr>
+                    <td>联系方式</td>
+                    <td><input name="tel" class="easyui-textbox" style="width:100%" data-options="
+                        value:rowPad.row.tel,
+                        iconWidth:20,
+                        icons:[{
+                            iconCls:'icon-clear',
+                            handler: function(e){
+                                $(e.data.target).textbox('setValue','');
+                            }
+                        }],
+                        onChange:function(newValue, oldValue){
+                            rowPad.row.tel=newValue
+                        }" style="width:200px"></td>
+                </tr>
+                <tr>
+                    <td>备注</td>
+                    <td><input name="remark" class="easyui-textbox" style="width:100%;height:200px;" data-options="
+                            value:rowPad.row.remark,
+                            multiline:true,
+                            onChange:function(newValue, oldValue){
+                                rowPad.row.remark=newValue
+                            }" style="width:200px"></td>
+                </tr>
+                <tr>
+                    <td>排序号</td>
+                    <td><input name="orderNo" class="easyui-numberbox" style="width:100%" data-options="
+                                    value:rowPad.row.orderNo,
+                                    precision:2,
+                                    iconWidth:20,
+                                    icons:[{
+                                        iconCls:'icon-clear',
+                                        handler: function(e){
+                                            $(e.data.target).textbox('setValue','');
+                                        }
+                                    }],
+                                    onChange:function(newValue, oldValue){
+                                        rowPad.row.orderNo=newValue
+                                    }" style="width:200px"></td>
+                </tr>
+                <tr>
+                    <td>添加时间</td>
+                    <td><input name="addTime" class="easyui-datetimebox" style="width:100%" data-options="
+                                        value:moment(rowPad.row.addTime).format('YYYY-MM-DD H:mm:ss'),
+                                        editable:false,
+                                        icons:[{
+                                            iconCls:'icon-clear',
+                                            handler: function(e){
+                                                $(e.data.target).datetimebox('setValue','');
+                                            }
+                                        }],
+                                        onChange:function(newValue, oldValue){
+                                            rowPad.row.addTime=newValue
+                                        }"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="passwordAlert" style="display: none;font-size: 12px;">
+            <div class="layui-layer-shade" id="layui-layer-shade1" times="1" style="z-index: 100; background-color: rgb(0, 0, 0); opacity: 0.3;">
+            </div>
+            <div class="layui-layer layui-layer-dialog" id="layui-layer1" type="dialog" times="1" showtime="0" contype="string" style="z-index: 200; top: 0px; left: 0px;right: 0px;bottom: 0px;margin: auto;width: 275px;height: 167px;">
+                <div class="layui-layer-title" style="cursor: move;">信息</div>
+                <div>
+                    <div style="margin: 0px 2.5px;margin: 10px 0px;">
+                        <span style="display: inline-block;width: 50px;text-align: right;">密码</span>
+                        <input type="text" id="passwordId" style="display: inline-block;height: 30px;width: auto;min-width: 200px;">
+                    </div>
+                    <div style="margin: 0px 2.5px;">
+                        <span style="display: inline-block;width: 50px;text-align: right;">确认密码</span>
+                        <input type="text" id="passwordConfirmId" style="display: inline-block;height: 30px;width: auto;min-width: 200px;">
+
+                    </div>
+                </div>
+                <span class="layui-layer-setwin">
+                    <a class="layui-layer-ico layui-layer-close layui-layer-close1" href="javascript:;" onclick="$('.passwordAlert').css('display', 'none');$('.passwordAlert').val('');$('.passwordConfirmId').val('')"></a>
+                </span>
+                <div class="layui-layer-btn layui-layer-btn-">
+                    <a class="layui-layer-btn0" onclick="rowPad.modifyPasswordFn()">确定</a>
+                    <a class="layui-layer-btn1" onclick="$('.passwordAlert').css('display', 'none');$('.passwordAlert').val('');$('.passwordConfirmId').val('')">取消</a>
+                </div>
+                <span class="layui-layer-resize"></span>
+            </div>
+        </div>
+        <div style="margin-top:5px;">
+            <a href="JavaScript:void(0)" class="easyui-linkbutton show" iconCls="icon-edit"
+                onclick="$('.edit').css('display','inline-block');$('.show').hide();">修改</a>
+            <a href="JavaScript:void(0)" class="easyui-linkbutton edit" iconCls="icon-save"
+                onclick="rowPad.rowAlter()">确认修改</a>
+            <a href="JavaScript:void(0)" class="easyui-linkbutton edit" iconCls="icon-cancel"
+                onclick="location.reload()">取消修改</a>
+            <a id="modifyPassword" href="JavaScript:void(0)" class="easyui-linkbutton" iconCls="icon-edit"
+                onclick="$('.passwordAlert').css('display', 'block')">修改密码</a>
+        </div>
+    </div>
+</body>
+<script>
+    rowPad.afterPage()
+    var _file = '';
+            var _data = undefined
+            function saveFn(e,data){
+                console.log(data)
+                _data = undefined;
+                _data = data
+                _file =''
+                _file = e
+                console.log(e)
+            }
+
+            function showFn(){
+                cropper.crop()
+                
+            }
+            function submitFn(){
+                // console.dir(cropper.getCroppedCanvas().toDataURL('image/jpeg'))
+                if(_file)
+                    common.BlockHeadUploadImage(cropper.getCroppedCanvas().toDataURL('image/jpeg'),_file.name,function(url){
+                        console.log(_data)
+                        $('.coverPad img').attr('src',url)
+                        rowPad.row.license=url   
+                        $('#images').attr('src' , '')
+                        $('.photoPopup').css('display', 'none')
+                        cropper.destroy()
+                        _file = ''
+                    })
+                console.dir(_file)
+            }
+            function showcCancelFn(){
+                cropper.reset()
+                cropper.clear()
+                $('.photoPopup').css('display', 'none')
+                cropper.destroy()
+                _file = ''
+            }
+</script>
+
+</html>
