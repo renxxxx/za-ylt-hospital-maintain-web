@@ -72,6 +72,11 @@
            
         },
         rowAdd: function () {
+            if(rowPad.row.status==4&&!rowPad.row.confirmedTime){
+                alert('请选择确认时间！')
+                return
+                // if(rowPad.row.confirmedTime==null)
+            }
             $.ajax({
                 type: 'post',
                 url: '/ylt/hospital/maintain/patient-add',
