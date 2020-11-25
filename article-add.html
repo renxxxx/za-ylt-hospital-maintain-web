@@ -71,26 +71,27 @@
             $(rowPad.selector).find('[name=dg]').datagrid()
 
             rowPad.contentEditor = tinymce.init({
-    selector: '[name=content]',
-    height:'500px',
-    plugins : 'advlist autolink link image lists charmap print preview media paste save imagetools template pagebreak hr autosave fullpage fullscreen table textcolor textpattern wordcount insertdatetime legacyoutput pageembed code bdmap',
-    automatic_uploads: false,
-    relative_urls : false,
-    forced_root_block: 'div',
-    force_p_newlines: false,
-    images_upload_url: 'postAcceptor.php',
-    language: "zh_CN",
-    init_instance_callback : function(editor) {
-        if(rowPad.row.contentBtId)
-            $.get(rowPad.row.contentBtId,function(res){
-                editor.setContent(res)
-            })
-    },
-    file_picker_callback:function(callback,value,meta){
-        console.log('file_picker_callback')
-        $(`<input type='file'/>`).change(function(){
-            console.log('input file change')
-            var target = this;
+                selector: '[name=content]',
+                height:'500px',
+                plugins : 'advlist autolink link image lists charmap print preview media paste save imagetools template pagebreak hr autosave fullpage fullscreen table textcolor textpattern wordcount insertdatetime legacyoutput pageembed code bdmap',
+                font_formats: 'Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings,zapf dingbats;微软雅黑=Microsoft YaHei,Helvetica Neue,PingFang SC,sans-serif;苹果苹方=PingFang SC,Microsoft YaHei,sans-serif;宋体=simsun,serif;',
+                automatic_uploads: false,
+                relative_urls : false,
+                forced_root_block: 'div',
+                force_p_newlines: false,
+                images_upload_url: 'postAcceptor.php',
+                language: "zh_CN",
+                init_instance_callback : function(editor) {
+                    if(rowPad.row.contentBtId)
+                        $.get(rowPad.row.contentBtId,function(res){
+                            editor.setContent(res)
+                        })
+                },
+                file_picker_callback:function(callback,value,meta){
+                    console.log('file_picker_callback')
+                    $(`<input type='file'/>`).change(function(){
+                        console.log('input file change')
+                        var target = this;
                                 if(this.files.length>0){
                                     var file = this.files[0];
                                     var fd = new FormData()
